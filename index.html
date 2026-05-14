@@ -681,8 +681,10 @@
   /* Jexilo's Cards — face-down picker + revealed cards */
   .jex-card { width:88px; height:128px; border-radius:10px; background:linear-gradient(135deg,#1a0f06 0%,#3a2418 100%); border:2px solid var(--gold); display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s,box-shadow .2s; font-family:'Cinzel',serif; color:var(--gold); position:relative; box-shadow:0 4px 12px rgba(0,0,0,.5); }
   .jex-card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(255,215,0,.35); }
-  .jex-card-back { font-size:2.4rem; opacity:.7; }
-  .jex-card-back::after { content:'?'; font-size:2.4rem; font-family:'Cinzel Decorative',cursive; }
+  .jex-card-back { width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px; }
+  /* ::after ? fallback removed — we have card_back.png art now. If it fails
+     to load, the img's own onerror handler hides it, exposing the dark
+     gradient card background. Clean fallback, no stray question marks. */
   .jex-card.revealed { cursor:default; }
   .jex-card.revealed:hover { transform:none; box-shadow:0 4px 12px rgba(0,0,0,.5); }
   .jex-card-icon { font-size:1.8rem; margin-bottom:4px; }
@@ -2313,7 +2315,7 @@
       <div style="font-family:'Cinzel Decorative',cursive;font-size:1.1rem;color:var(--gold);margin-bottom:6px" id="jexCardsResultName">Card</div>
       <div style="font-size:.82rem;color:var(--text-mid);line-height:1.5;margin-bottom:12px;padding:0 8px" id="jexCardsResultDesc">Effect description</div>
       <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--text-dim);letter-spacing:2px;margin:14px 0 8px">— ALL THREE CARDS —</div>
-      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:16px" id="jexCardsRevealRow"></div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;align-items:flex-start" id="jexCardsRevealRow"></div>
       <button class="btn btn-gold btn-sm" onclick="closeJexCards()">Onward!</button>
     </div>
   </div>
@@ -4558,11 +4560,34 @@ function loadGame() {
     const save = JSON.parse(raw);
     if (!save.hero) return false;
     state.hero = save.hero;
+    // Backfill any new fields added to class abilities since this character was created.
+    // Older saves don't have ability.imageId — without this, those characters render
+    // the emoji instead of the ability art. We merge any missing fields from the
+    // current CLASSES definition while preserving the saved cooldown state.
+    const cls = CLASSES[state.hero.class];
+    if (cls?.ability && state.hero.ability) {
+      Object.keys(cls.ability).forEach(k => {
+        if (state.hero.ability[k] === undefined) {
+          state.hero.ability[k] = cls.ability[k];
+        }
+      });
+    }
     state.playerLevel = save.playerLevel||1;
     state.playerXP = save.playerXP||0;
     state.playerGold = save.playerGold||0;
     state.equipped = save.equipped||{weapon:null,armor:null,ring:null,relic:null};
     state.inventory = save.inventory||[];
+    // Backfill imageId on saved gear instances. Items dropped before image
+    // rendering was added don't have imageId on the saved instance — we look
+    // up the current template by name and copy any imageId it has. Generic
+    // items (no passive) stay imageId-less and render their emoji.
+    state.inventory.forEach(g => {
+      if (g && g.imageId === undefined && g.name) {
+        const slotTemplates = GEAR_TEMPLATES[g.slot] || [];
+        const tpl = slotTemplates.find(t => t.name === g.name);
+        if (tpl && tpl.imageId) g.imageId = tpl.imageId;
+      }
+    });
     state.nextGearId = save.nextGearId||1;
     state.mastery = save.mastery||{};
     state.potions = save.potions||0;
@@ -9003,7 +9028,7 @@ function showJexCards(onClose) {
   // Face-down render. Each card shows the card-back image; if missing, falls back
   // to a stylized "?" via the .jex-card-back::after rule.
   document.getElementById('jexCardsRow').innerHTML = _jexCardsDraw.map((_,i) =>
-    `<div class="jex-card" onclick="pickJexCard(${i})"><div class="jex-card-back"><img src="cards/card_back.png" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display='none'"></div></div>`
+    `<div class="jex-card" onclick="pickJexCard(${i})"><div class="jex-card-back"><img src="cards/card_back.png" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:6px" onerror="this.style.display='none'"></div></div>`
   ).join('');
   document.getElementById('jexCardsOverlay').classList.add('show');
 }
@@ -9019,25 +9044,36 @@ function pickJexCard(idx) {
   if (!picked) return;
   applyJexCardEffect(picked);
   // Result phase — picked card big + all three revealed
-  // Picked card: bypass resolveAssetIcon to render at portrait aspect ratio
-  // (height-driven). Cards are 2:3, so a 160px tall card is ~107px wide —
-  // big enough to dominate the result modal.
+  //
+  // Picked card: render inside a card-styled container at full visible size.
+  // Container is 130×195px (matches 2:3 portrait aspect). Image fills via
+  // object-fit:contain so the whole card art is visible without cropping.
+  // Container has the same gold/colored border treatment as the reveal-row
+  // mini cards, so visually they read as one unified card system.
   const pickedImageId = picked.card.imageId;
-  if (pickedImageId) {
-    document.getElementById('jexCardsResultIcon').innerHTML =
-      `<img src="cards/${pickedImageId}.png" alt="" style="height:160px;width:auto;display:block" onerror="this.outerHTML='<span style=&quot;font-size:64px&quot;>${picked.card.icon}</span>'">`;
-  } else {
-    document.getElementById('jexCardsResultIcon').innerHTML = `<span style="font-size:64px">${picked.card.icon}</span>`;
-  }
+  const pickedBorderClass = picked.isBoon ? 'boon' : 'bane';
+  const pickedInner = pickedImageId
+    ? `<img src="cards/${pickedImageId}.png" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:6px" onerror="this.outerHTML='<span style=&quot;font-size:64px&quot;>${picked.card.icon}</span>'">`
+    : `<span style="font-size:64px">${picked.card.icon}</span>`;
+  document.getElementById('jexCardsResultIcon').innerHTML =
+    `<div class="jex-card revealed ${pickedBorderClass}" style="width:130px;height:195px;display:flex;align-items:center;justify-content:center;padding:0">${pickedInner}</div>`;
   document.getElementById('jexCardsResultName').textContent = picked.card.name;
   document.getElementById('jexCardsResultDesc').textContent = picked.card.desc;
   document.getElementById('jexCardsResultDesc').style.color = picked.isBoon ? '#88FF99' : '#FF8899';
-  // Reveal row — all three cards face-up, picked one highlighted
-  document.getElementById('jexCardsRevealRow').innerHTML = _jexCardsDraw.map((c,i) => `
-    <div class="jex-card revealed ${c.isBoon?'boon':'bane'} ${i===idx?'picked':''}">
-      <div class="jex-card-icon">${resolveAssetIcon(c.card, 'cards', 40)}</div>
-      <div class="jex-card-name">${c.card.name}</div>
-    </div>`).join('');
+  // Reveal row: each card is the styled card-box CONTAINING the image fully
+  // (no internal icon + name layout), with the card name rendered as a
+  // separate label BELOW the card box. Wrapper div stacks card + label.
+  document.getElementById('jexCardsRevealRow').innerHTML = _jexCardsDraw.map((c,i) => {
+    const imgId = c.card.imageId;
+    const inner = imgId
+      ? `<img src="cards/${imgId}.png" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:6px" onerror="this.outerHTML='<span style=&quot;font-size:1.6rem&quot;>${c.card.icon}</span>'">`
+      : `<span style="font-size:1.6rem">${c.card.icon}</span>`;
+    const nameColor = c.isBoon ? '#88FF99' : '#FF8899';
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div class="jex-card revealed ${c.isBoon?'boon':'bane'} ${i===idx?'picked':''}" style="padding:0">${inner}</div>
+      <div style="font-family:'Cinzel',serif;font-size:.62rem;text-align:center;color:${nameColor};letter-spacing:.5px;line-height:1.1;max-width:88px">${c.card.name}</div>
+    </div>`;
+  }).join('');
   document.getElementById('jexCardsPhase1').style.display = 'none';
   document.getElementById('jexCardsPhase2').style.display = 'block';
 }
