@@ -3347,7 +3347,7 @@ function _buildGear(slot, rarityOverride, ultraLegendary=false) {
 // Build an Alpha version of an enemy template
 function buildAlpha(base) {
   const alpha = JSON.parse(JSON.stringify(base));
-  alpha.name = '⚡ Alpha ' + base.name;
+  alpha.name = base.name; // pulsing ALPHA badge is the visual cue, no name prefix needed
   alpha.sprite = base.sprite;
   alpha.isAlpha = true;
   alpha.hp   = Math.round(base.hp   * 1.7);
@@ -3484,6 +3484,16 @@ function getActivePassives() {
     builtInFire: false,
     // Built-in ice (Frost Armor) — adds to enchant Ice even without enchant
     builtInIce: false,
+    // Source attribution — tracks which item/enchant granted each passive so
+    // combat logs can name the source. Maps passive-field-name → display string.
+    // For multi-source passives (e.g. multiple items with "Heal 2 HP on turn win"),
+    // we keep the FIRST source — log just says one name to keep messages clean.
+    _source: {},
+  };
+
+  // Helper to record source attribution. Only writes if not already set (first wins).
+  const recordSource = (field, sourceName) => {
+    if (!p._source[field]) p._source[field] = sourceName;
   };
   for (const slot of Object.keys(state.equipped)) {
     const eid = state.equipped[slot];
@@ -3492,10 +3502,10 @@ function getActivePassives() {
     if (!g) continue;
     // Enchants — capped at one source per type
     if (g.enchant) {
-      if (g.enchant.effect === 'fire'      && !p.enchantFire)      p.enchantFire = true;
-      if (g.enchant.effect === 'ice'       && p.enchantIce === 0)  p.enchantIce = 1;
-      if (g.enchant.effect === 'lightning' && !p.enchantLightning) p.enchantLightning = true;
-      if (g.enchant.effect === 'shadow'    && !p.enchantShadow)    { p.enchantShadow = true; p.enchantShadowFirstBoost = true; }
+      if (g.enchant.effect === 'fire'      && !p.enchantFire)      { p.enchantFire = true; recordSource('enchantFire', `${g.enchant.name||'Fire'} enchant`); }
+      if (g.enchant.effect === 'ice'       && p.enchantIce === 0)  { p.enchantIce = 1; recordSource('enchantIce', `${g.enchant.name||'Ice'} enchant`); }
+      if (g.enchant.effect === 'lightning' && !p.enchantLightning) { p.enchantLightning = true; recordSource('enchantLightning', `${g.enchant.name||'Lightning'} enchant`); }
+      if (g.enchant.effect === 'shadow'    && !p.enchantShadow)    { p.enchantShadow = true; p.enchantShadowFirstBoost = true; recordSource('enchantShadow', `${g.enchant.name||'Shadow'} enchant`); }
     }
     // Process passive AND secondPassive (ultra legendary)
     [g.passive, g.secondPassive].forEach(passiveStr => {
@@ -3505,28 +3515,29 @@ function getActivePassives() {
       if (s.includes('Reduce all damage by 1'))      p.flatDmgReduction = Math.max(p.flatDmgReduction, 1);
       if (s.includes('Reduce chip damage by 1'))     p.chipDmgReduction = Math.max(p.chipDmgReduction, 1);
       if (s.includes('Reduce burst damage by 3'))    p.burstDmgReduction = Math.max(p.burstDmgReduction, 3);
-      if (s.includes('First hit each battle reduced by 2')) p.firstHitReduction = Math.max(p.firstHitReduction, 2);
+      if (s.includes('First hit each battle reduced by 2')) { p.firstHitReduction = Math.max(p.firstHitReduction, 2); recordSource('firstHitReduction', g.name); }
       if (s.includes('Take minimum 1 damage'))       p.minDmgFloor = true;
-      if (s.includes('First hit each battle blocks')) p.firstRoundBlocks = true;
-      if (s.includes('chance to negate incoming burst')) p.burstNegateChance = Math.max(p.burstNegateChance, 0.20);
-      if (s.includes('Reflect 3 damage'))            p.reflectDmg = Math.max(p.reflectDmg, 3);
-      if (s.includes('chance to reflect 2'))         { p.reflectDmg = Math.max(p.reflectDmg, 2); p.reflectChance = Math.max(p.reflectChance, 0.10); }
+      if (s.includes('First hit each battle blocks')) { p.firstRoundBlocks = true; recordSource('firstRoundBlocks', g.name); }
+      if (s.includes('chance to negate incoming burst')) { p.burstNegateChance = Math.max(p.burstNegateChance, 0.20); recordSource('burstNegateChance', g.name); }
+      if (s.includes('Reflect 3 damage'))            { p.reflectDmg = Math.max(p.reflectDmg, 3); recordSource('reflectDmg', g.name); }
+      if (s.includes('chance to reflect 2'))         { p.reflectDmg = Math.max(p.reflectDmg, 2); p.reflectChance = Math.max(p.reflectChance, 0.10); recordSource('reflectDmg', g.name); }
       // Legendary relic passive: percent-based reflect on enemy bursts (vs the flat 2-3 dmg above)
       if (s.includes('chance to reflect burst damage')) {
         const m = s.match(/(\d+)% chance to reflect burst/);
         const pct = m ? parseInt(m[1])/100 : 0.20;
         p.reflectBurstChance = Math.max(p.reflectBurstChance || 0, pct);
         p.reflectBurstPct    = Math.max(p.reflectBurstPct    || 0, 0.50); // reflects 50% of taken damage
+        recordSource('reflectBurstChance', g.name);
       }
       // Strike
       const strikeBonusMatch = s.match(/Strike wins deal \+(\d+)/);
-      if (strikeBonusMatch) p.strikeBonusDmg = Math.max(p.strikeBonusDmg, parseInt(strikeBonusMatch[1]));
-      if (s.includes('20% chance for Strike wins to deal +4 bonus damage')) { p.bonusDmgChance = 0.20; p.bonusDmgAmount = 4; }
-      if (s.includes('2-0 sweeps deal 110%')) p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.10);
-      if (s.includes('2-0 sweeps deal 120%')) p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.20);
-      if (s.includes('33% chance to hit twice on Strike')) p.doubleStrikeChance = Math.max(p.doubleStrikeChance, 0.33);
-      if (s.includes('10% lifesteal on Strike wins')) p.lifestealStrike = Math.max(p.lifestealStrike, 0.10);
-      if (s.includes('Stuns enemy on 2-0 sweep'))  p.stunOnSweep = true;
+      if (strikeBonusMatch) { p.strikeBonusDmg = Math.max(p.strikeBonusDmg, parseInt(strikeBonusMatch[1])); recordSource('strikeBonusDmg', g.name); }
+      if (s.includes('20% chance for Strike wins to deal +4 bonus damage')) { p.bonusDmgChance = 0.20; p.bonusDmgAmount = 4; recordSource('bonusDmgChance', g.name); }
+      if (s.includes('2-0 sweeps deal 110%')) { p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.10); recordSource('sweepMultiplier', g.name); }
+      if (s.includes('2-0 sweeps deal 120%')) { p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.20); recordSource('sweepMultiplier', g.name); }
+      if (s.includes('33% chance to hit twice on Strike')) { p.doubleStrikeChance = Math.max(p.doubleStrikeChance, 0.33); recordSource('doubleStrikeChance', g.name); }
+      if (s.includes('10% lifesteal on Strike wins')) { p.lifestealStrike = Math.max(p.lifestealStrike, 0.10); recordSource('lifestealStrike', g.name); }
+      if (s.includes('Stuns enemy on 2-0 sweep'))  { p.stunOnSweep = true; recordSource('stunOnSweep', g.name); }
       // Spell
       const spellBonusMatch = s.match(/Spell wins deal \+(\d+)/);
       if (spellBonusMatch) p.spellBonusDmg = Math.max(p.spellBonusDmg, parseInt(spellBonusMatch[1]));
@@ -3539,20 +3550,20 @@ function getActivePassives() {
       if (s.includes('Crits deal 2x') || s.includes('Crits deal 2×')) { p.critMultiplier = Math.max(p.critMultiplier, 2.0); p.crit2xWeapon = true; }
       if (s.includes('+5% crit chance')) p.critBonusChance = Math.max(p.critBonusChance, 0.05);
       // HP / regen
-      if (s.match(/Heal (\d+) HP on turn win/))    p.hpOnRoundWin = Math.max(p.hpOnRoundWin, parseInt(s.match(/Heal (\d+) HP/)[1]));
-      if (s.match(/Regain (\d+) HP on Shield wins/)) p.hpOnShieldWin = Math.max(p.hpOnShieldWin, parseInt(s.match(/Regain (\d+) HP/)[1]));
-      if (s.includes('Spell wins restore 2 HP'))    p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 2);
-      if (s.includes('Spell wins heal 4 HP'))       p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 4);
-      if (s.match(/Heal (\d+) HP at start/))         p.hpOnBattleStart = Math.max(p.hpOnBattleStart, parseInt(s.match(/Heal (\d+) HP/)[1]));
-      if (s.includes('Absorb 1 HP on every tie'))   p.hpOnTie = Math.max(p.hpOnTie, 1);
-      if (s.includes('Heal 2 HP on burst win'))     p.hpOnBurstWin = Math.max(p.hpOnBurstWin, 2);
-      if (s.includes('Win a turn to gain 5 HP'))   p.hpOnWinARound = Math.max(p.hpOnWinARound, 5);
+      if (s.match(/Heal (\d+) HP on turn win/))    { p.hpOnRoundWin = Math.max(p.hpOnRoundWin, parseInt(s.match(/Heal (\d+) HP/)[1])); recordSource('hpOnRoundWin', g.name); }
+      if (s.match(/Regain (\d+) HP on Shield wins/)) { p.hpOnShieldWin = Math.max(p.hpOnShieldWin, parseInt(s.match(/Regain (\d+) HP/)[1])); recordSource('hpOnShieldWin', g.name); }
+      if (s.includes('Spell wins restore 2 HP'))    { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 2); recordSource('hpOnSpellWin', g.name); }
+      if (s.includes('Spell wins heal 4 HP'))       { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 4); recordSource('hpOnSpellWin', g.name); }
+      if (s.match(/Heal (\d+) HP at start/))         { p.hpOnBattleStart = Math.max(p.hpOnBattleStart, parseInt(s.match(/Heal (\d+) HP/)[1])); recordSource('hpOnBattleStart', g.name); }
+      if (s.includes('Absorb 1 HP on every tie'))   { p.hpOnTie = Math.max(p.hpOnTie, 1); recordSource('hpOnTie', g.name); }
+      if (s.includes('Heal 2 HP on burst win'))     { p.hpOnBurstWin = Math.max(p.hpOnBurstWin, 2); recordSource('hpOnBurstWin', g.name); }
+      if (s.includes('Win a turn to gain 5 HP'))   { p.hpOnWinARound = Math.max(p.hpOnWinARound, 5); recordSource('hpOnWinARound', g.name); }
       // (Heal N HP on turn win — handled by the regex above as hpOnRoundWin)
       // Conditional ATK passives
-      if (s.includes('+6 ATK when below 50% HP'))    p.sub50AtkBonus = Math.max(p.sub50AtkBonus, 6);
-      if (s.includes('Gain 2 ATK per kill (max +10)'))   p.atkPerKill = Math.max(p.atkPerKill, 2);
-      if (s.includes('Gain 2 ATK after winning a turn')) p.atkPerRoundWin = Math.max(p.atkPerRoundWin, 2);
-      if (s.includes('+2 ATK each time you take burst damage (max +10)')) p.gainAtkOnDmgTaken = Math.max(p.gainAtkOnDmgTaken, 2);
+      if (s.includes('+6 ATK when below 50% HP'))    { p.sub50AtkBonus = Math.max(p.sub50AtkBonus, 6); recordSource('sub50AtkBonus', g.name); }
+      if (s.includes('Gain 2 ATK per kill (max +10)'))   { p.atkPerKill = Math.max(p.atkPerKill, 2); recordSource('atkPerKill', g.name); }
+      if (s.includes('Gain 2 ATK after winning a turn')) { p.atkPerRoundWin = Math.max(p.atkPerRoundWin, 2); recordSource('atkPerRoundWin', g.name); }
+      if (s.includes('+2 ATK each time you take burst damage (max +10)')) { p.gainAtkOnDmgTaken = Math.max(p.gainAtkOnDmgTaken, 2); recordSource('gainAtkOnDmgTaken', g.name); }
       // Holy Light tweaks
       if (s.includes('Holy Light heals +10% extra')) p.holyLightHealBonus += 0.10;
       if (s.includes('Holy Light heals 25% not 20%')) p.holyLightHealBonus += 0.05;
@@ -3571,10 +3582,10 @@ function getActivePassives() {
       if (s.includes('+5% Strike damage per round')) p.strikeStreakDmg = 0.05;
       if (s.includes('Crits restore 1 ability cooldown')) p.critRestoreCd = true;
       // Ultra Legendary effects
-      if (s.includes('Revive once per battle at 15% HP')) p.revive15 = true;
-      if (s.includes('Win streaks grant +2 ATK stacking (max +8)')) p.streakAtkStack = 2;
+      if (s.includes('Revive once per battle at 15% HP')) { p.revive15 = true; recordSource('revive15', g.name); }
+      if (s.includes('Win streaks grant +2 ATK stacking (max +8)')) { p.streakAtkStack = 2; recordSource('streakAtkStack', g.name); }
       // Misc
-      if (s.includes('Poisons enemy'))               p.poisonChip = Math.max(p.poisonChip, 2);
+      if (s.includes('Poisons enemy'))               { p.poisonChip = Math.max(p.poisonChip, 2); recordSource('poisonChip', g.name); }
       const goldMatch = s.match(/\+(\d+)% Gold from battles/);
       if (goldMatch) p.bonusGoldPct = Math.max(p.bonusGoldPct, parseInt(goldMatch[1])/100);
       if (s.includes('+5 RP bonus on PvP win'))      p.pvpRpBonus = Math.max(p.pvpRpBonus, 5);
@@ -8291,7 +8302,7 @@ function startBattle(enemyTemplate) {
   if (enemy.isAlpha) enemyHpBar.classList.add('alpha-hp');
   else enemyHpBar.classList.remove('alpha-hp');
   document.getElementById('playerSpriteLabel').textContent = state.hero.name;
-  document.getElementById('enemySpriteLabel').textContent = enemy.isAlpha ? '⚡ ALPHA' : enemy.name;
+  document.getElementById('enemySpriteLabel').textContent = enemy.isAlpha ? 'ALPHA' : enemy.name;
   hideReveal();
   updateBattleHUD();
   buildAbilityRow();
@@ -8314,7 +8325,7 @@ function startBattle(enemyTemplate) {
     }
   }
   const startMsg = enemy.isAlpha
-    ? `An Alpha ${enemy.name.replace('⚡ Alpha ','')} appears!`
+    ? `${enemy.name} appears!`
     : 'The battle begins! Win 2 turns to deal damage!';
   setLog(startMsg, enemy.isAlpha ? 'enemy-win-log' : '');
   if (enemy.isAlpha) { showToast('Alpha encountered! High chance of a relic drop.'); playSound('alpha_warning',0.8); }
@@ -8967,7 +8978,8 @@ function resolveRound(playerMove, enemyMove) {
       const actualHealed = b.playerHp - before;
       if (actualHealed > 0) spawnFloat('+'+actualHealed, 'heal', true);
     }
-    logMsg=`${pIcon} vs ${eIcon} — Clash! Chip damage${clashMult<1?' (Speed!)':''}${fireChipBonus>0?' (Fire!)':''}${coliseumTieExtra}${wiseVeteranLogMsg}`; logCls='tie-log';
+    const fireChipSrc = (fireChipBonus > 0 && pa._source?.enchantFire) ? ` (${pa._source.enchantFire})` : (fireChipBonus > 0 ? ' (Fire!)' : '');
+    logMsg=`${pIcon} vs ${eIcon} — Clash! Chip damage${clashMult<1?' (Speed!)':''}${fireChipSrc}${coliseumTieExtra}${wiseVeteranLogMsg}`; logCls='tie-log';
     if (counterImmunityProc) {
       // Override the standard tie message — make it clear the Eternal Champion
       // bent the rules. Distinctive copy in Jexilo's voice. Always shown red
@@ -9026,9 +9038,15 @@ function resolveRound(playerMove, enemyMove) {
       }
       // Enchant bonuses (capped — Fire/Lightning each from one source)
       let enchantNote='';
-      if (pa.enchantFire && playerMove === 'spell') { dmg += 2; enchantNote='Fire!'; }
+      if (pa.enchantFire && playerMove === 'spell') {
+        dmg += 2;
+        const fSrc = pa._source?.enchantFire;
+        enchantNote = fSrc ? `${fSrc}!` : 'Fire!';
+      }
       if (pa.enchantLightning && playerMove === 'strike' && Math.random() < 0.15) {
-        b.enemy._stunned = true; enchantNote = 'STUN!';
+        b.enemy._stunned = true;
+        const lSrc = pa._source?.enchantLightning;
+        enchantNote = lSrc ? `STUN (${lSrc})!` : 'STUN!';
       }
       // Relic +15% damage bonus
       if(relicId){const r=state.inventory.find(g=>g.id===relicId);if(r&&r.passive&&r.passive.includes('+15%'))dmg=Math.floor(dmg*1.15);}
@@ -9047,7 +9065,13 @@ function resolveRound(playerMove, enemyMove) {
       }
       if(enchantNote.includes('STUN')) achStat('enemiesStunned',1);
       // Stun-on-sweep (War Hammer)
-      if (sweep && pa.stunOnSweep) { b.enemy._stunned = true; if (!enchantNote) enchantNote = 'STUN!'; }
+      if (sweep && pa.stunOnSweep) {
+        b.enemy._stunned = true;
+        if (!enchantNote) {
+          const sSrc = pa._source?.stunOnSweep;
+          enchantNote = sSrc ? `STUN (${sSrc})!` : 'STUN!';
+        }
+      }
       // ── COLISEUM: Wise Veteran block effect ──
       // If King's Champion learned Iron Wall, this turn's burst is blocked.
       // Consumed once — flag cleared after applying.
@@ -9188,7 +9212,8 @@ function resolveRound(playerMove, enemyMove) {
         logMsg=`${eIcon} BEATS ${pIcon} — ${b.enemy.name} wins turn but you DODGE!${dodgeAttr}${wiseVeteranLogMsg}`; logCls='tie-log';
       } else if (negated) {
         dmg = 0;
-        logMsg = `${b.enemy.name}'s burst is NEGATED by your gear!${wiseVeteranLogMsg}`; logCls = 'tie-log';
+        const negSrc = pa._source?.burstNegateChance;
+        logMsg = `${b.enemy.name}'s burst is NEGATED${negSrc ? ' by ' + negSrc : ' by your gear'}!${wiseVeteranLogMsg}`; logCls = 'tie-log';
       } else {
         // ── COLISEUM: Wise Veteran pierce — skip player DEF reduction ──
         if (b._wvPierceDef) {
@@ -9205,7 +9230,8 @@ function resolveRound(playerMove, enemyMove) {
         if (pa.firstRoundBlocks && !b._firstRoundBlocked) {
           b._firstRoundBlocked = true;
           dmg = 0;
-          logMsg = `Sentinel Spear — first hit blocked!${wiseVeteranLogMsg}`; logCls = 'tie-log';
+          const blockSrc = pa._source?.firstRoundBlocks || 'Your gear';
+          logMsg = `${blockSrc} — first hit blocked!${wiseVeteranLogMsg}`; logCls = 'tie-log';
           b.playerHp -= 0; playerDmg = 0;
           // skip the rest of the damage calc
           b.playerRoundWins=0; b.enemyRoundWins=0; b.roundNum=(b.roundNum||1)+1;
@@ -9246,7 +9272,13 @@ function resolveRound(playerMove, enemyMove) {
         }
         // Track damage taken for Berserker Heart's stacking ATK
         if (pa.gainAtkOnDmgTaken > 0) {
-          b._dmgTakenAtkBonus = Math.min(10, (b._dmgTakenAtkBonus || 0) + pa.gainAtkOnDmgTaken);
+          const before = b._dmgTakenAtkBonus || 0;
+          b._dmgTakenAtkBonus = Math.min(10, before + pa.gainAtkOnDmgTaken);
+          const gained = b._dmgTakenAtkBonus - before;
+          if (gained > 0) {
+            const src = pa._source?.gainAtkOnDmgTaken;
+            coliseumBurstExtra += ` +${gained} ATK${src ? ' (' + src + ')' : ''}!`;
+          }
         }
         achStat(`raceDmgTaken_${state.hero.race||'human'}`, dmg);
         logMsg=`${sweep?'SWEPT! ':''}${b.enemy.name} wins the round! ${dmg} damage dealt${wvNote}${coliseumBurstExtra}${wiseVeteranLogMsg}`;logCls='enemy-win-log';
@@ -9256,7 +9288,8 @@ function resolveRound(playerMove, enemyMove) {
           if (shouldReflect) {
             b.enemyHp = Math.max(0, b.enemyHp - pa.reflectDmg);
             spawnFloat('-'+pa.reflectDmg,'enemy-dmg',false);
-            logMsg += ` ${pa.reflectDmg} reflected!`;
+            const rSrc = pa._source?.reflectDmg;
+            logMsg += ` ${pa.reflectDmg} reflected${rSrc ? ' (' + rSrc + ')' : ''}!`;
           }
         }
         // Legendary relic burst reflect — % chance to return % of damage taken.
@@ -9266,13 +9299,7 @@ function resolveRound(playerMove, enemyMove) {
           const reflected = Math.max(1, Math.floor(dmg * (pa.reflectBurstPct || 0.5)));
           b.enemyHp = Math.max(0, b.enemyHp - reflected);
           spawnFloat('-'+reflected,'enemy-dmg',false);
-          // Attribute to the equipped relic if its passive matches.
-          let reflectSource = '';
-          const relicId = state.equipped.relic;
-          if (relicId) {
-            const relic = state.inventory.find(g => g.id === relicId);
-            if (relic && (relic.passive||'').includes('reflect burst')) reflectSource = ` (${relic.name})`;
-          }
+          const reflectSource = pa._source?.reflectBurstChance ? ` (${pa._source.reflectBurstChance})` : '';
           logMsg += ` ${reflected} reflected back${reflectSource}!`;
         }
         // Burst loss sound
@@ -9839,9 +9866,11 @@ function resultPrimary(){
   quickSave();
   if(state.currentEnemyIdx < state.currentEnemyQueue.length){
     // Boss-rush arenas (Coliseum of Eternals): restore 50% of missing HP between
-    // fights, and skip the random card/crowd-tap events — the rush is meant to
-    // feel uninterrupted, building toward the final boss. The healing is the
-    // ONLY breathing room the player gets between back-to-back boss fights.
+    // fights, then roll for between-fight events. Per playtest feedback, the
+    // Coliseum benefits from the same crowd-tap / Jexilo card variety that
+    // normal arenas get, just at a lower rate so each boss fight still feels
+    // climactic. Skipped only before the FINAL boss (Eternal Champion) — that
+    // climactic moment stays uninterrupted.
     const arena = state.currentRealm;
     if (arena?.isBossRush) {
       const bonuses = getEquipBonuses();
@@ -9851,6 +9880,20 @@ function resultPrimary(){
         const heal = Math.floor(missing * 0.5);
         state.hero.hp = Math.min(effMax, state.hero.hp + heal);
         if (heal > 0) showToast(`✨ The Gods restore ${heal} HP between fights`);
+      }
+      // Coliseum between-boss event roll. Lower rate than normal arenas (30%
+      // total instead of 50%) so each boss fight still has weight. Skip if
+      // the NEXT fight is the final boss — that moment stays clean.
+      const isFinalBossNext = state.currentEnemyIdx >= state.currentEnemyQueue.length - 1;
+      if (!isFinalBossNext) {
+        const roll = Math.random();
+        if (roll < 0.15) {
+          showJexCards(() => startBattleWithAlert(state.currentEnemyQueue[state.currentEnemyIdx]));
+          return;
+        } else if (roll < 0.30) {
+          showCrowdTap(() => startBattleWithAlert(state.currentEnemyQueue[state.currentEnemyIdx]));
+          return;
+        }
       }
       startBattleWithAlert(state.currentEnemyQueue[state.currentEnemyIdx]);
       return;
@@ -9962,7 +10005,7 @@ function startBattleWithAlert(enemyTemplate) {
   } else {
     icon.textContent  = '⚡';
     title.textContent = 'Alpha Warning';
-    sub.textContent   = enemyTemplate.name?.replace(/^⚡\s*Alpha\s*/, '⚡ Alpha ') || '⚡ An Alpha enemy';
+    sub.textContent   = enemyTemplate.name || 'An Alpha enemy';
     desc.textContent  = 'An Alpha enemy with boosted stats has crossed your path. A guaranteed drop awaits — with a strong chance of a Relic.';
   }
   // Stash the pending enemy so confirm/cancel know what to do
