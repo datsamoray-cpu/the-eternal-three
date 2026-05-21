@@ -1838,11 +1838,11 @@
         <table class="guide-table">
           <tr><th>Rarity</th><th>Stat Multiplier</th><th>Drop Weight</th><th>Salvage Value</th></tr>
           <tr><td class="rc-common-text"><strong>Common</strong></td><td>1.0×</td><td>49%</td><td>8g</td></tr>
-          <tr><td class="rc-uncommon-text"><strong>Uncommon</strong></td><td>1.5×</td><td>28%</td><td>20g</td></tr>
-          <tr><td class="rc-rare-text"><strong>Rare</strong></td><td>2.2×</td><td>14%</td><td>50g</td></tr>
-          <tr><td class="rc-epic-text"><strong>Epic</strong></td><td>3.5×</td><td>6%</td><td>120g</td></tr>
-          <tr><td class="rc-legendary-text"><strong>Legendary</strong></td><td>5.5×</td><td>2%</td><td>250g</td></tr>
-          <tr><td class="rc-ultra-text">Ultra Legendary</td><td>8.0×</td><td>0.5%*</td><td>500g</td></tr>
+          <tr><td class="rc-uncommon-text"><strong>Uncommon</strong></td><td>1.3×</td><td>28%</td><td>20g</td></tr>
+          <tr><td class="rc-rare-text"><strong>Rare</strong></td><td>1.7×</td><td>14%</td><td>50g</td></tr>
+          <tr><td class="rc-epic-text"><strong>Epic</strong></td><td>2.3×</td><td>6%</td><td>120g</td></tr>
+          <tr><td class="rc-legendary-text"><strong>Legendary</strong></td><td>3.2×</td><td>2%</td><td>250g</td></tr>
+          <tr><td class="rc-ultra-text">Ultra Legendary</td><td>4.6×</td><td>0.5%*</td><td>500g</td></tr>
         </table>
         <div class="guide-note">*Ultra Legendary only drops from bosses and Alpha enemies. Never from regular enemies. Each stat also has ±15% variance on generation.</div>
       </div>
@@ -2997,7 +2997,11 @@ const RARITY_WEIGHTS = [56.5, 28, 11, 4.5, 1]; // common,uncommon,rare,epic,lege
 // roll for ultra legendary. Tightened from 49/28/14/6/2 — legendaries felt too common.
 // Legendary is index 4 with 2% weight for normal drops; we add ultra_legendary as a special flag
 const LEGENDARY_DROP_CHANCE = 0.005; // 0.5% — checked separately for boss/alpha only
-const RARITY_MULT = [1,1.5,2.2,3.5,5.5,8.0]; // index 5 = ultra legendary
+const RARITY_MULT = [1, 1.3, 1.7, 2.3, 3.2, 4.6]; // common, uncommon, rare, epic, legendary, ultra
+// Old curve was [1, 1.5, 2.2, 3.5, 5.5, 8.0] — Legendary at 5.5× Common gave
+// a single late-game item more stat impact than 30+ player levels of growth.
+// New curve keeps relative tier ordering but compresses the absolute range
+// so gear remains exciting without replacing the leveling progression.
 const SALVAGE_VALUE = {common:8,uncommon:20,rare:45,epic:100,legendary:250,ultra:500};
 // Helper: get the salvage tier for a gear item (Ultra Legendary returns 'ultra').
 function _gearRarityKey(gear) { return gear?.ultraLegendary ? 'ultra' : gear?.rarity; }
@@ -3288,7 +3292,7 @@ function _buildGear(slot, rarityOverride, ultraLegendary=false) {
       if(roll<cumulative){rarity=RARITIES[i];break;}
     }
   }
-  const mult = ultraLegendary ? 8.0 : RARITY_MULT[RARITIES.indexOf(rarity)];
+  const mult = ultraLegendary ? 4.6 : RARITY_MULT[RARITIES.indexOf(rarity)];
   const allTemplates = GEAR_TEMPLATES[slot];
   // Filter drops by class/race — only items the player can actually equip.
   // If no hero yet (very early in init), fall back to the full pool.
@@ -3366,7 +3370,7 @@ function buildAlpha(base) {
 
 function gearStatBonus(gear) {
   if (!gear) return {};
-  const upgMult = 1 + gear.upgradeLevel * 0.10;
+  const upgMult = 1 + gear.upgradeLevel * 0.08; // +8% per level (was +10%) — reduces the compounding of rarity×upgrade
   const result = {};
   for (const [k,v] of Object.entries(gear.stats)) {
     result[k] = Math.round(v * upgMult);
@@ -4421,6 +4425,7 @@ function startGame(portraitEmoji, auraColor) {
   state.equipped={weapon:null,armor:null,ring:null,relic:null};
   state.inventory=[]; state.nextGearId=1; state.alphaSpawns={};
   state.mastery={}; state.regenTimer=null;
+  state.statMigrationV1=true; // new characters skip the one-time legacy stat migration
   // Reset PvP rank on new character — seed leaderboard with starting rating
   state.pvp={rating:100,wins:0,losses:0,opponents:[]};
   setTimeout(()=>pfPostLeaderboard(100), 1000); // seed after login completes
@@ -4770,6 +4775,7 @@ function saveGame() {
     currentRealmId: state.currentRealm?.id || null,
     currentEnemyIdx: state.currentEnemyIdx || 0,
     alphaSpawns: state.alphaSpawns || {},
+    statMigrationV1: !!state.statMigrationV1, // one-time rebalance migration flag
     lastSeen: Date.now(),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch(e) {}
@@ -4800,6 +4806,7 @@ function quickSave() {
     currentRealmId: state.currentRealm?.id || null,
     currentEnemyIdx: state.currentEnemyIdx || 0,
     alphaSpawns: state.alphaSpawns || {},
+    statMigrationV1: !!state.statMigrationV1,
     lastSeen: Date.now(),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch(e) {}
@@ -4844,6 +4851,56 @@ function loadGame() {
     });
     state.nextGearId = save.nextGearId||1;
     state.mastery = save.mastery||{};
+
+    // ── ONE-TIME STAT MIGRATION (after gear-system recalibration) ──
+    // Old RARITY_MULT was [1, 1.5, 2.2, 3.5, 5.5, 8.0]
+    // New RARITY_MULT is  [1, 1.3, 1.7, 2.3, 3.2, 4.6]
+    // Items dropped under the old system have stored stats that are too high
+    // for the new curve. Scale each stat by new/old ratio so existing items
+    // are normalized. Also re-sync base SPD/MAG/LCK on the hero since those
+    // stats now grow per level (Fix 2) and the hero's stored values are frozen
+    // at character-creation time.
+    if (!save.statMigrationV1) {
+      const OLD_MULT = [1, 1.5, 2.2, 3.5, 5.5];
+      const NEW_MULT = [1, 1.3, 1.7, 2.3, 3.2];
+      const RARITIES_LOCAL = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+      (state.inventory || []).forEach(g => {
+        if (!g || !g.stats) return;
+        // Ultra Legendary: scale 8.0 → 4.6
+        const isUltra = !!g.ultraLegendary;
+        const oldMult = isUltra ? 8.0 : OLD_MULT[RARITIES_LOCAL.indexOf(g.rarity)] || 1;
+        const newMult = isUltra ? 4.6 : NEW_MULT[RARITIES_LOCAL.indexOf(g.rarity)] || 1;
+        const ratio = newMult / oldMult;
+        for (const k of Object.keys(g.stats)) {
+          // Preserve direction (negative stats like spd:-2 on heavy armor)
+          const sign = g.stats[k] < 0 ? -1 : 1;
+          g.stats[k] = Math.round(g.stats[k] * ratio);
+          // Don't let positive stats round to 0 — keep at least 1 to preserve item identity
+          if (g.stats[k] === 0 && sign > 0) g.stats[k] = 1;
+        }
+      });
+      // Re-apply SPD/MAG/LCK growth to the existing hero based on current player level.
+      // Net SPD growth per level: every 2 levels = +1 (so at Lvl N, gained floor(N/2) SPD)
+      // Net MAG growth: every 3 levels starting at 3 = +1 at L3, L6, L9... = floor(N/3)
+      // Net LCK growth: every 3 levels starting at 4 = +1 at L4, L7, L10... = floor((N-1)/3) for N>=2
+      if (state.hero) {
+        const lvl = state.playerLevel || 1;
+        const spdGain = Math.floor(lvl / 2);
+        const magGain = Math.floor(lvl / 3);
+        const lckGain = lvl >= 2 ? Math.floor((lvl - 1) / 3) : 0;
+        state.hero.spd = (state.hero.spd || 0) + spdGain;
+        state.hero.mag = (state.hero.mag || 0) + magGain;
+        state.hero.lck = (state.hero.lck || 0) + lckGain;
+      }
+      save.statMigrationV1 = true; // mark applied so we don't double-apply on next load
+      state.statMigrationV1 = true; // mirror on state so future saveGame() persists it
+      // Persist the migration immediately to the in-memory save object so any
+      // immediate-next save retains the flag. The actual localStorage write
+      // will happen on the next saveGame() call.
+    } else {
+      state.statMigrationV1 = true;
+    }
+
     state.potions = save.potions||0;
     state.potionsBoughtToday = save.potionsBoughtToday||0;
     state.pvp = save.pvp||{rating:100,wins:0,losses:0};
@@ -9508,6 +9565,18 @@ function endMatch(victory) {
     if(state.playerXP>=xpNeeded){
       state.playerLevel++; state.playerXP-=xpNeeded;
       state.hero.atk+=2; state.hero.def+=1; state.hero.maxHp+=15;
+      // SPD/MAG/LCK growth — without this, a Lvl 25 character has the same
+      // SPD/MAG/LCK base as Lvl 1, putting 100% of those stats onto gear.
+      // Growth thresholds: SPD every 2 levels, MAG/LCK every 3 levels.
+      // We compare new level to old to see which thresholds were crossed.
+      const newLvl = state.playerLevel;
+      const oldLvl = newLvl - 1;
+      // SPD: +1 when level is even (2, 4, 6, 8, ...)
+      if (newLvl % 2 === 0) state.hero.spd += 1;
+      // MAG: +1 when level is multiple of 3 (3, 6, 9, ...)
+      if (newLvl % 3 === 0) state.hero.mag += 1;
+      // LCK: +1 when level - 1 is multiple of 3 (4, 7, 10, ...) — offset from MAG so they alternate
+      if ((newLvl - 1) % 3 === 0 && newLvl > 1) state.hero.lck += 1;
       // Full heal on level up — restore to effective max (base + gear bonus).
       // Previously was a partial +20 heal; now leveling up always gives you
       // a clean slate to fight from. Makes the milestone feel more rewarding
@@ -10122,6 +10191,11 @@ function debugLevelUp() {
   state.hero.atk += 2;
   state.hero.def += 1;
   state.hero.maxHp += 15;
+  // SPD/MAG/LCK growth — mirror the real level-up flow.
+  const newLvl = state.playerLevel;
+  if (newLvl % 2 === 0) state.hero.spd += 1;
+  if (newLvl % 3 === 0) state.hero.mag += 1;
+  if ((newLvl - 1) % 3 === 0 && newLvl > 1) state.hero.lck += 1;
   // Full heal: respect equip-HP bonuses
   const bonuses = getEquipBonuses();
   state.hero.hp = state.hero.maxHp + (bonuses.hp || 0);
