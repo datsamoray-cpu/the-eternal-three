@@ -1712,6 +1712,18 @@
       </div>
 
       <div class="guide-subsection">
+        <div class="guide-subsection-title">MOVE IDENTITIES</div>
+        <p class="guide-p">Beyond the RPS triangle, each move has its own tactical identity that rewards committing to a playstyle. These apply to <strong>every</strong> fighter regardless of class or race.</p>
+        <table class="guide-table">
+          <tr><th>Move</th><th>Identity</th></tr>
+          <tr><td><strong>⚔ Strike</strong></td><td><strong>Streak</strong> — each consecutive Strike win adds +3% ATK to your burst damage, stacking up to +15%. Switching moves or losing a round resets it.</td></tr>
+          <tr><td><strong>🛡 Shield</strong></td><td><strong>Stance</strong> — Shield wins build a defensive stance that absorbs part of the next incoming burst (scales with your DEF). Stacks across consecutive Shield wins, consumed when you take a hit.</td></tr>
+          <tr><td><strong>🔮 Spell</strong></td><td><strong>Tempo</strong> — each Spell win reduces your loaded ability's cooldown by 1 turn, letting you cycle abilities faster.</td></tr>
+        </table>
+        <p class="guide-p">Watch for the <strong>STREAK</strong> and <strong>STANCE</strong> badges under your fighter — they show your built-up state in real time.</p>
+      </div>
+
+      <div class="guide-subsection">
         <div class="guide-subsection-title">BEST-OF-3 TURNS</div>
         <p class="guide-p">Each battle is decided in best-of-3 turn scoring. No HP damage is dealt until someone wins 2 turns.</p>
         <table class="guide-table">
@@ -1851,13 +1863,13 @@
         <div class="guide-subsection-title">ENCHANTING</div>
         <table class="guide-table">
           <tr><th>Element</th><th>Effect</th><th>Cost by Rarity</th></tr>
-          <tr><td><strong>Fire</strong></td><td>+2 damage on Spell wins; +1 chip damage on tied Spells</td><td rowspan="4">Common 80g · Uncommon 150g · Rare 280g · Epic 500g · Legendary 900g</td></tr>
-          <tr><td><strong>Ice</strong></td><td>−3 enemy SPD and −1 enemy ATK for the entire battle</td></tr>
-          <tr><td><strong>Lightning</strong></td><td>15% chance to stun on Strike burst (enemy skips next attack)</td></tr>
-          <tr><td><strong>Shadow</strong></td><td>15% dodge chance on incoming bursts; +5% bonus until first burst hits you</td></tr>
+          <tr><td><strong>Fire</strong></td><td>+15% MAG bonus damage on Spell wins; +1 chip damage on tied Spells</td><td rowspan="4">Common 80g · Uncommon 150g · Rare 280g · Epic 500g · Legendary 900g</td></tr>
+          <tr><td><strong>Ice</strong></td><td>−3 enemy SPD and −8% enemy ATK for the entire battle</td></tr>
+          <tr><td><strong>Lightning</strong></td><td>Chance to stun on Strike burst — 8% / 12% / 15% with 1 / 2 / 3 Lightning enchants (enemy skips next attack)</td></tr>
+          <tr><td><strong>Shadow</strong></td><td>Chance to dodge incoming bursts — 8% / 12% / 15% with 1 / 2 / 3 Shadow enchants; +5% bonus until first burst hits you</td></tr>
         </table>
         <p class="guide-p">One enchant per item. Relics cannot be enchanted. To <strong>swap</strong> an enchant, the existing one must be removed first for <strong>50g</strong>, then a new one applied at the regular cost.</p>
-        <div class="guide-note"><strong>⚠️ Enchants don't stack.</strong> Putting Lightning on three items still gives you a single 15% stun chance — not 45%. Each element triggers from at most one source per battle. Diversify your enchants across elements for layered effects.</div>
+        <div class="guide-note"><strong>⚡ Lightning & Shadow stack.</strong> Equipping the same one on multiple items raises the chance with diminishing returns — 8% / 12% / 15% for 1 / 2 / 3 enchants — so going all-in on one element reaches the 15% cap. <strong>Fire & Ice don't stack</strong> — a second of either does nothing, so spread those across elements.</div>
       </div>
 
       <div class="guide-subsection">
@@ -3010,15 +3022,15 @@ const UPGRADE_COST = [0,30,60,100,150,220,300,400,520,660,800];
 const GEAR_TEMPLATES = {
   weapon: [
     {name:"Iron Sword",        icon:"⚔️", stats:{atk:8,def:1},          passive:null,                                    classes:["barbarian","guardian"]},
-    {name:"Battle Axe",        icon:"🪓", imageId:"itm_battle_axe", stats:{atk:12,def:0},         passive:"20% chance for Strike wins to deal +4 bonus damage",    classes:["barbarian"]},
+    {name:"Battle Axe",        icon:"🪓", imageId:"itm_battle_axe", stats:{atk:12,def:0},         passive:"20% chance for Strike wins to deal +20% ATK",    classes:["barbarian"]},
     {name:"Greatclub",         icon:"🏑", stats:{atk:14,hp:5},          passive:null,                                    classes:["barbarian"]},
     {name:"War Hammer",        icon:"🔨", imageId:"itm_war_hammer", stats:{atk:11,def:2},         passive:"Stuns enemy on 2-0 sweep for 1 turn",  classes:["barbarian","guardian"]},
     {name:"Cleaver",           icon:"🗡️", stats:{atk:13,spd:1},         passive:null,                                    classes:["barbarian","rogue"]},
-    {name:"Berserker Axe",     icon:"🪓", imageId:"itm_berserker_axe", stats:{atk:16,def:-2},        passive:"+6 ATK when below 50% HP",              classes:["barbarian"]},
+    {name:"Berserker Axe",     icon:"🪓", imageId:"itm_berserker_axe", stats:{atk:16,def:-2},        passive:"+25% ATK when below 50% HP",              classes:["barbarian"]},
     {name:"Titan Maul",        icon:"🔨", imageId:"itm_titan_maul", stats:{atk:18,hp:-10},        passive:"2-0 sweeps deal 120% ATK",              classes:["barbarian"]},
     {name:"Longsword",         icon:"⚔️", stats:{atk:9,def:3},          passive:null,                                    classes:["guardian","barbarian"]},
     {name:"Bastard Sword",     icon:"⚔️", stats:{atk:10,def:2},         passive:null,                                    classes:["guardian"]},
-    {name:"Tower Shield Blade",icon:"🛡️", imageId:"itm_tower_shield_blade", stats:{atk:7,def:6},          passive:"Reduce chip damage by 1",               classes:["guardian"]},
+    {name:"Tower Shield Blade",icon:"🛡️", imageId:"itm_tower_shield_blade", stats:{atk:7,def:6},          passive:"Reduce chip damage by 25%",               classes:["guardian"]},
     {name:"Paladin Blade",     icon:"⚔️", stats:{atk:9,def:3,hp:8},     passive:null,                                    classes:["guardian","cleric"]},
     {name:"Sentinel Spear",    icon:"🔱", imageId:"itm_sentinel_spear", stats:{atk:10,def:4},         passive:"First hit each battle blocks",        classes:["guardian"]},
     {name:"Mage Staff",        icon:"🪄", stats:{mag:10,atk:3},         passive:null,                                    classes:["mage","cleric"]},
@@ -3031,7 +3043,7 @@ const GEAR_TEMPLATES = {
     {name:"Blessed Staff",     icon:"✝️", imageId:"itm_blessed_staff", stats:{mag:9,hp:15},          passive:"Holy Light heals +10% extra",           classes:["cleric"]},
     {name:"Sanctified Hammer", icon:"🔨", stats:{atk:7,def:3,hp:10},    passive:null,                                    classes:["cleric","guardian"]},
     {name:"Scourge of Faith",  icon:"⚖️", imageId:"itm_scourge_of_faith", stats:{atk:10,mag:8,hp:12},    passive:"Holy Light deals 30% MAG damage to enemy on cast", classes:["cleric"]},
-    {name:"Divine Sceptre",    icon:"✨", imageId:"itm_divine_sceptre", stats:{mag:11,hp:18},         passive:"Win a turn to gain 5 HP",              classes:["cleric"]},
+    {name:"Divine Sceptre",    icon:"✨", imageId:"itm_divine_sceptre", stats:{mag:11,hp:18},         passive:"Win a turn to gain 4% HP",              classes:["cleric"]},
     {name:"Radiant Flail",     icon:"⛓️", stats:{atk:10,mag:6},         passive:null,                                    classes:["cleric"]},
     {name:"Rogue Blade",       icon:"🗡️", stats:{atk:9,spd:4},          passive:null,                                    classes:["rogue"]},
     {name:"Shadow Dagger",     icon:"🌑", stats:{atk:8,spd:5,lck:3},    passive:null,                                    classes:["rogue"]},
@@ -3046,7 +3058,7 @@ const GEAR_TEMPLATES = {
     {name:"Dragonfang Arrow",  icon:"🏹", stats:{atk:14,lck:4},         passive:null,                                    classes:["archer"]},
     {name:"Stormpiercer Bow",  icon:"⚡", imageId:"itm_stormpiercer_bow", stats:{atk:13,lck:6,spd:2},    passive:"Crits restore 1 ability cooldown",      classes:["archer"]},
     {name:"Dragon Fang",       icon:"🐉", imageId:"itm_dragon_fang", stats:{atk:14,mag:5},         passive:"10% lifesteal on Strike wins",           classes:null},
-    {name:"Hellfire Blade",    icon:"🔥", imageId:"itm_hellfire_blade", stats:{atk:15,mag:4},         passive:"Fire enchant built-in: +2 Spell damage",classes:null},
+    {name:"Hellfire Blade",    icon:"🔥", imageId:"itm_hellfire_blade", stats:{atk:15,mag:4},         passive:"Fire enchant built-in: Spell wins deal +15% MAG",classes:null},
     {name:"Ancient Runesword", icon:"🗿", stats:{atk:12,def:3,mag:3},   passive:null,                                    classes:null},
   ],
   armor: [
@@ -3061,10 +3073,10 @@ const GEAR_TEMPLATES = {
     {name:"Scale Armor",       icon:"🐟", stats:{def:9,spd:-1},         passive:null,                                    classes:["guardian","barbarian"]},
     {name:"Brigandine",        icon:"⛓️", stats:{def:7,atk:2},          passive:null,                                    classes:["barbarian","rogue"]},
     {name:"Ranger Mail",       icon:"🟫", stats:{def:6,spd:2,lck:2},    passive:null,                                    classes:["archer"]},
-    {name:"Warlord Harness",   icon:"⚔️", imageId:"itm_warlord_harness", stats:{def:8,atk:3},          passive:"Gain 2 ATK after winning a turn",      classes:["barbarian"]},
+    {name:"Warlord Harness",   icon:"⚔️", imageId:"itm_warlord_harness", stats:{def:8,atk:3},          passive:"Gain 4% ATK after winning a turn (max +20%)",      classes:["barbarian"]},
     {name:"Champion Hauberk",  icon:"⛓️", stats:{def:9,hp:8},           passive:null,                                    classes:["guardian","barbarian"]},
     {name:"Holy Plate",        icon:"✝️", stats:{def:12,hp:10},         passive:null,                                    classes:["guardian","cleric"]},
-    {name:"Iron Bulwark",      icon:"🛡️", imageId:"itm_iron_bulwark", stats:{def:14,spd:-2},        passive:"Reduce burst damage by 3 on loss",      classes:["guardian"]},
+    {name:"Iron Bulwark",      icon:"🛡️", imageId:"itm_iron_bulwark", stats:{def:14,spd:-2},        passive:"Reduce burst damage by 15% on loss",      classes:["guardian"]},
     {name:"Fortress Plate",    icon:"🏰", stats:{def:15,hp:15,spd:-3},  passive:null,                                    classes:["guardian"]},
     {name:"Sentinel Shell",    icon:"🛡️", imageId:"itm_sentinel_shell", stats:{def:13,hp:12},         passive:"Iron Wall CD reduced by 1",             classes:["guardian"]},
     {name:"Crusader Plate",    icon:"⚔️", stats:{def:11,hp:10,atk:2},   passive:null,                                    classes:["guardian","cleric"]},
@@ -3072,33 +3084,33 @@ const GEAR_TEMPLATES = {
     {name:"Mage Robes",        icon:"🔮", stats:{mag:8,hp:6},           passive:null,                                    classes:["mage","cleric"]},
     {name:"Arcane Vestments",  icon:"✨", stats:{mag:10,def:2},         passive:null,                                    classes:["mage"]},
     {name:"Sorcerer Shroud",   icon:"🌌", imageId:"itm_sorcerer_shroud", stats:{mag:12,hp:8},          passive:"MAG scales with missing HP",            classes:["mage"]},
-    {name:"Void Robes",        icon:"🖤", imageId:"itm_void_robes", stats:{mag:14,hp:-5},         passive:"Spell wins deal +5 bonus damage",       classes:["mage"]},
+    {name:"Void Robes",        icon:"🖤", imageId:"itm_void_robes", stats:{mag:14,hp:-5},         passive:"Spell wins deal +20% MAG",       classes:["mage"]},
     {name:"Cleric Surplice",   icon:"✝️", stats:{hp:18,mag:6,def:3},    passive:null,                                    classes:["cleric"]},
     {name:"Hallowed Vestments",icon:"☀️", imageId:"itm_hallowed_vestments", stats:{hp:20,mag:8},          passive:"Holy Light heals 25% not 20%",          classes:["cleric"]},
-    {name:"Vestment of the Avenger", icon:"⚖️", imageId:"itm_vestment_of_the_avenger", stats:{def:9,hp:10,mag:5}, passive:"Spell wins heal 4 HP",                  classes:["cleric"]},
+    {name:"Vestment of the Avenger", icon:"⚖️", imageId:"itm_vestment_of_the_avenger", stats:{def:9,hp:10,mag:5}, passive:"Spell wins heal 3% HP",                  classes:["cleric"]},
     {name:"Prophet Robe",      icon:"📜", stats:{mag:11,hp:14},         passive:null,                                    classes:["cleric","mage"]},
-    {name:"Dragon Scale",      icon:"🐉", imageId:"itm_dragon_scale", stats:{def:12,hp:12,mag:3},   passive:"10% chance to reflect 2 damage",        classes:null},
+    {name:"Dragon Scale",      icon:"🐉", imageId:"itm_dragon_scale", stats:{def:12,hp:12,mag:3},   passive:"10% chance to reflect 10% damage",        classes:null},
     {name:"Warlord Plate",     icon:"👑", stats:{def:13,atk:4,hp:8},    passive:null,                                    classes:null},
-    {name:"Frost Armor",       icon:"❄️", imageId:"itm_frost_armor", stats:{def:10,spd:2,mag:4},   passive:"Ice enchant built-in: -3 enemy SPD, -1 enemy ATK", classes:null},
+    {name:"Frost Armor",       icon:"❄️", imageId:"itm_frost_armor", stats:{def:10,spd:2,mag:4},   passive:"Ice enchant built-in: -3 enemy SPD, -8% enemy ATK", classes:null},
     {name:"Shadowweave Mail",  icon:"🌑", stats:{def:8,spd:3,lck:4},    passive:null,                                    classes:null},
-    {name:"Ancient Stonehide", icon:"🗿", imageId:"itm_ancient_stonehide", stats:{def:18,hp:10,spd:-5},  passive:"Reduce all damage by 1 (min 1)",        classes:null},
+    {name:"Ancient Stonehide", icon:"🗿", imageId:"itm_ancient_stonehide", stats:{def:18,hp:10,spd:-5},  passive:"Reduce all damage by 5% (min 1)",        classes:null},
   ],
   ring: [
     {name:"Ring of Might",     icon:"💍", stats:{atk:4},                passive:null,                                    classes:null},
     {name:"Warrior Band",      icon:"⚔️", stats:{atk:5,def:-1},         passive:null,                                    classes:["barbarian","guardian"]},
-    {name:"Bloodring",         icon:"🔴", imageId:"itm_bloodring", stats:{atk:6},                passive:"Gain 2 ATK per kill (max +10)",          classes:["barbarian","rogue"]},
+    {name:"Bloodring",         icon:"🔴", imageId:"itm_bloodring", stats:{atk:6},                passive:"Gain 4% ATK per kill (max +20%)",          classes:["barbarian","rogue"]},
     {name:"Titan Grip",        icon:"💪", stats:{atk:7,hp:-5},          passive:null,                                    classes:["barbarian"]},
     {name:"Ravager Loop",      icon:"🔥", stats:{atk:5,mag:2},          passive:null,                                    classes:null},
     {name:"Iron Band",         icon:"⛓️", stats:{def:4},                passive:null,                                    classes:null},
     {name:"Bulwark Ring",      icon:"🛡️", stats:{def:5,hp:5},           passive:null,                                    classes:["guardian"]},
-    {name:"Stoneguard Band",   icon:"🗿", imageId:"itm_stoneguard_band", stats:{def:6},                passive:"First hit each battle reduced by 2",    classes:["guardian"]},
+    {name:"Stoneguard Band",   icon:"🗿", imageId:"itm_stoneguard_band", stats:{def:6},                passive:"First hit each battle reduced by 10%",    classes:["guardian"]},
     {name:"Swiftness Ring",    icon:"💨", stats:{spd:4},                passive:null,                                    classes:["archer","rogue"]},
     {name:"Quickstep Loop",    icon:"⚡", stats:{spd:5,atk:1},          passive:null,                                    classes:["rogue"]},
     {name:"Windband",          icon:"🌬️", imageId:"itm_windband", stats:{spd:6},                passive:"SPD reduction on clash is doubled",     classes:["archer"]},
     {name:"Hawk's Eye Loop",   icon:"🦅", imageId:"itm_hawks_eye_loop", stats:{spd:4,lck:5},          passive:"+5% Strike damage per round (max +25%)",classes:["archer"]},
     {name:"Arcane Ring",       icon:"✨", stats:{mag:5},                passive:null,                                    classes:["mage","cleric"]},
     {name:"Spellweave Band",   icon:"🔮", stats:{mag:6,hp:-3},          passive:null,                                    classes:["mage"]},
-    {name:"Sorcerer Band",     icon:"💎", imageId:"itm_sorcerer_band", stats:{mag:8},                passive:"Spell wins deal +2 bonus damage",       classes:["mage"]},
+    {name:"Sorcerer Band",     icon:"💎", imageId:"itm_sorcerer_band", stats:{mag:8},                passive:"Spell wins deal +8% MAG",       classes:["mage"]},
     {name:"Verdant Coil",      icon:"🌿", stats:{mag:5,def:2},          passive:null,                                    classes:["hollowfen","cleric"]},
     {name:"Reliquary Band",    icon:"⚖️", imageId:"itm_reliquary_band", stats:{hp:14,mag:4},           passive:"Take 25% less damage from boss enemies",classes:["cleric"]},
     {name:"Fortune Ring",      icon:"🍀", stats:{lck:5},                passive:null,                                    classes:["rogue","archer"]},
@@ -3106,35 +3118,35 @@ const GEAR_TEMPLATES = {
     {name:"Gambler Band",      icon:"♦️", imageId:"itm_gambler_band", stats:{lck:8,def:-2},         passive:"Crits deal 2x instead of 1.5x",         classes:null},
     {name:"Vitality Ring",     icon:"❤️", stats:{hp:16},                passive:null,                                    classes:["cleric","guardian"]},
     {name:"Lifebond Circle",   icon:"💚", stats:{hp:18,def:1},          passive:null,                                    classes:["cleric"]},
-    {name:"Bloodstone Ring",   icon:"🩸", imageId:"itm_bloodstone_ring", stats:{hp:20},                passive:"Heal 3 HP on turn win",                classes:null},
+    {name:"Bloodstone Ring",   icon:"🩸", imageId:"itm_bloodstone_ring", stats:{hp:20},                passive:"Heal 2% HP on turn win",                classes:null},
     {name:"Champion Ring",     icon:"👑", stats:{atk:3,def:3,spd:2},    passive:null,                                    classes:null},
     {name:"Balanced Band",     icon:"⚖️", stats:{atk:2,def:2,mag:2},    passive:null,                                    classes:["human"]},
     {name:"Gladiator Seal",    icon:"🏟️", imageId:"itm_gladiator_seal", stats:{atk:4,hp:8},           passive:"+5 RP bonus on PvP win",                classes:null},
     {name:"Fen Circlet",       icon:"🌿", stats:{def:3,mag:4,hp:6},     passive:null,                                    classes:["hollowfen"]},
   ],
   relic: [
-    {name:"War Totem",         icon:"🗿", imageId:"itm_war_totem", stats:{atk:8,hp:5},           passive:"Strike wins deal +3 damage",            classes:["barbarian","orc"]},
-    {name:"Berserker Heart",   icon:"🖤", imageId:"itm_berserker_heart", stats:{atk:10,def:-3},        passive:"+2 ATK each time you take burst damage (max +10)",      classes:["barbarian"]},
+    {name:"War Totem",         icon:"🗿", imageId:"itm_war_totem", stats:{atk:8,hp:5},           passive:"Strike wins deal +15% ATK",            classes:["barbarian","orc"]},
+    {name:"Berserker Heart",   icon:"🖤", imageId:"itm_berserker_heart", stats:{atk:10,def:-3},        passive:"+4% ATK each time you take burst damage (max +20%)",      classes:["barbarian"]},
     {name:"Warlord Trophy",    icon:"🏆", stats:{atk:9,spd:2},          passive:null,                                    classes:["barbarian","orc"]},
     {name:"Skull of Conquest", icon:"💀", imageId:"itm_skull_of_conquest", stats:{atk:11,hp:-8},         passive:"2-0 sweeps deal 110% ATK",              classes:["barbarian"]},
     {name:"Iron Talisman",     icon:"⛓️", stats:{def:9,hp:12},          passive:null,                                    classes:["guardian","dwarf"]},
     {name:"Shield Rune",       icon:"🛡️", imageId:"itm_shield_rune", stats:{def:11,hp:8},          passive:"Iron Wall CD reduced by 1",             classes:["guardian"]},
-    {name:"Stone Idol",        icon:"🗿", imageId:"itm_stone_idol", stats:{def:10,hp:15},         passive:"Reflect 3 damage to enemy on every burst loss", classes:["guardian","dwarf"]},
+    {name:"Stone Idol",        icon:"🗿", imageId:"itm_stone_idol", stats:{def:10,hp:15},         passive:"Reflect 15% damage to enemy on every burst loss", classes:["guardian","dwarf"]},
     {name:"Mana Crystal",      icon:"💎", stats:{mag:10,spd:2},         passive:null,                                    classes:["mage","cleric"]},
     {name:"Arcane Orb",        icon:"🔮", imageId:"itm_arcane_orb", stats:{mag:12,hp:-5},         passive:"Arcane Bolt CD reduced by 1",           classes:["mage"]},
     {name:"Time Crystal",      icon:"⏳", imageId:"itm_time_crystal", stats:{mag:9,spd:4},          passive:"All ability CDs reduced by 1",          classes:["mage"]},
     {name:"Ancient Rune",      icon:"🪄", stats:{mag:11,atk:3},         passive:null,                                    classes:null},
-    {name:"Bogstone Relic",    icon:"🌿", imageId:"itm_bogstone_relic", stats:{mag:10,def:5},         passive:"Spell wins restore 2 HP",               classes:["hollowfen"]},
+    {name:"Bogstone Relic",    icon:"🌿", imageId:"itm_bogstone_relic", stats:{mag:10,def:5},         passive:"Spell wins restore 1.5% HP",               classes:["hollowfen"]},
     {name:"Shadow Orb",        icon:"🌑", imageId:"itm_shadow_orb", stats:{spd:6,lck:4},          passive:"Shadow Step CD reduced by 1",           classes:["rogue"]},
     {name:"Ghost Feather",     icon:"🪶", stats:{spd:7,atk:2},          passive:null,                                    classes:["rogue","archer"]},
     {name:"Hunter Mark",       icon:"🎯", imageId:"itm_hunter_mark", stats:{lck:8,spd:3},          passive:"Pinpoint Shot CD reduced by 1",         classes:["archer"]},
-    {name:"Phoenix Feather",   icon:"🔥", imageId:"itm_phoenix_feather", stats:{hp:20,mag:4},          passive:"Heal 5 HP at start of each battle",     classes:["cleric"]},
+    {name:"Phoenix Feather",   icon:"🔥", imageId:"itm_phoenix_feather", stats:{hp:20,mag:4},          passive:"Heal 4% HP at start of each battle",     classes:["cleric"]},
     {name:"Lucky Charm",       icon:"🍀", stats:{lck:6,hp:12},          passive:null,                                    classes:null},
-    {name:"Lifestone",         icon:"💚", imageId:"itm_lifestone", stats:{hp:25,def:3},          passive:"Regain 3 HP on Shield wins",            classes:["cleric","guardian"]},
+    {name:"Lifestone",         icon:"💚", imageId:"itm_lifestone", stats:{hp:25,def:3},          passive:"Regain 2% HP on Shield wins",            classes:["cleric","guardian"]},
     {name:"Dragon Heart",      icon:"🐉", imageId:"itm_dragon_heart", stats:{atk:8,mag:8,hp:10},    passive:"All ability CDs reduced by 1",          classes:null},
     {name:"Void Shard",        icon:"🖤", imageId:"itm_void_shard", stats:{mag:14,atk:4},         passive:"Spells bypass all DEF",                 classes:["mage"]},
     {name:"Titan Core",        icon:"⛏️", stats:{def:12,hp:20,atk:4},   passive:null,                                    classes:null},
-    {name:"Swamp Soul",        icon:"🌿", imageId:"itm_swamp_soul", stats:{def:8,mag:8,hp:12},    passive:"Absorb 1 HP on every tie",              classes:["hollowfen"]},
+    {name:"Swamp Soul",        icon:"🌿", imageId:"itm_swamp_soul", stats:{def:8,mag:8,hp:12},    passive:"Absorb 1% HP on every tie",              classes:["hollowfen"]},
   ],
 };
 
@@ -3269,9 +3281,9 @@ function generateRelic(rarityBoostIdx) {
   const relicPassivesByRarity = {
     common:    [],
     uncommon:  [],
-    rare:      ["Heal 1 HP on turn win", "Ability CD reduced by 1", "Spell wins deal +2 bonus damage", "Strike wins deal +2 bonus damage", "+5% crit chance"],
-    epic:      ["Heal 1 HP on turn win", "All ability CDs reduced by 1", "15% chance to negate incoming burst damage", "+25% Gold from battles", "Strike wins deal +4 bonus damage", "Chip damage reduced by 1"],
-    legendary: ["Heal 2 HP on turn win", "All ability CDs reduced by 1", "20% chance to reflect burst damage", "Win streaks grant +2 ATK stacking (max +8)", "Crits deal 2× damage"],
+    rare:      ["Heal 2% HP on turn win", "Ability CD reduced by 1", "Spell wins deal +8% MAG", "Strike wins deal +15% ATK", "+5% crit chance"],
+    epic:      ["Heal 2% HP on turn win", "All ability CDs reduced by 1", "15% chance to negate incoming burst damage", "+25% Gold from battles", "Strike wins deal +20% ATK", "Chip damage reduced by 25%"],
+    legendary: ["Heal 2% HP on turn win", "All ability CDs reduced by 1", "20% chance to reflect burst damage", "Win streaks grant +2 ATK stacking (max +8)", "Crits deal 2× damage"],
   };
   const rarityPool = relicPassivesByRarity[rarity] || [];
   const passive = template.passive || (rarityPool.length ? rarityPool[Math.floor(Math.random()*rarityPool.length)] : null);
@@ -3321,9 +3333,9 @@ function _buildGear(slot, rarityOverride, ultraLegendary=false) {
   if (!passive && RARITIES.indexOf(rarity) >= 2) {
     // Rarity-tiered passives for non-relic gear — no healing passives on weapons/armor/rings
     const gearPassivesByRarity = {
-      rare:      ["Ability CD reduced by 1", "Chip damage reduced by 1", "+5% crit chance", "+15% Gold from battles"],
-      epic:      ["Ability CD reduced by 1", "+5% crit chance", "Chip damage reduced by 1", "Strike wins deal +2 bonus damage", "+20% Gold from battles"],
-      legendary: ["All ability CDs reduced by 1", "Crits deal 2× damage", "20% chance to negate incoming burst damage", "+25% Gold from battles", "Strike wins deal +3 bonus damage"],
+      rare:      ["Ability CD reduced by 1", "Chip damage reduced by 25%", "+5% crit chance", "+15% Gold from battles"],
+      epic:      ["Ability CD reduced by 1", "+5% crit chance", "Chip damage reduced by 25%", "Strike wins deal +15% ATK", "+20% Gold from battles"],
+      legendary: ["All ability CDs reduced by 1", "Crits deal 2× damage", "20% chance to negate incoming burst damage", "+25% Gold from battles", "Strike wins deal +15% ATK"],
     };
     const pool = gearPassivesByRarity[rarity] || gearPassivesByRarity['rare'];
     passive = pool[Math.floor(Math.random()*pool.length)];
@@ -3332,7 +3344,7 @@ function _buildGear(slot, rarityOverride, ultraLegendary=false) {
   if (ultraLegendary) {
     // Ultra Legendary second passives — powerful but bounded
     const ultraPassives = [
-      "Heal 2 HP on burst win",
+      "Heal 2% HP on burst win",
       "Crits deal 2× damage",
       "Revive once per battle at 15% HP",
       "Win streaks grant +2 ATK stacking (max +8)",
@@ -3408,28 +3420,30 @@ function getEffectiveStat(baseStat, statKey) {
 function getActivePassives() {
   const p = {
     // Defensive
-    flatDmgReduction: 0,        // "Reduce all damage by 1 (min 1)"
-    chipDmgReduction: 0,        // "Reduce chip damage by 1"
-    burstDmgReduction: 0,       // "Reduce burst damage by 3 on loss"
-    firstHitReduction: 0,       // "First hit each battle reduced by 2"
+    flatDmgReduction: 0,        // "Reduce all damage by 5% (min 1)"
+    chipDmgReduction: 0,        // "Reduce chip damage by 25%"
+    burstDmgReduction: 0,       // "Reduce burst damage by 15% on loss"
+    firstHitReduction: 0,       // "First hit each battle reduced by 10%"
     minDmgFloor: false,         // "Take minimum 1 damage (never 0)"
     firstRoundBlocks: false,    // "First round each battle blocks"
     burstNegateChance: 0,       // "20% chance to negate incoming burst damage"
-    reflectDmg: 0,              // "Reflect 3 damage" / "10% chance to reflect 2"
+    reflectDmg: 0,              // "Reflect 15% damage" / "10% chance to reflect 10%" (% of dmg taken)
     reflectChance: 0,
     // Legendary relic percent-reflect (e.g. Ghost Feather "20% chance to reflect burst damage")
     reflectBurstChance: 0,      // probability of proc on enemy burst-loss
     reflectBurstPct: 0,         // fraction of incoming damage returned to enemy
     // Offensive — Strike
-    strikeBonusDmg: 0,          // "Strike wins deal +N damage"
-    bonusDmgChance: 0,          // "20% chance to deal +4 bonus damage" (strike-roll-only)
-    bonusDmgAmount: 0,
+    strikeBonusDmg: 0,          // legacy flat "+N bonus damage" (procedural pool)
+    strikeBonusPct: 0,          // "Strike wins deal +N% ATK" (% of ATK, decimal)
+    bonusDmgChance: 0,          // "20% chance to deal +20% ATK" (strike-roll-only)
+    bonusDmgPct: 0,             // % of ATK for the bonusDmgChance proc
     sweepMultiplier: 1.0,       // "2-0 sweeps deal 110% / 120% ATK"
     doubleStrikeChance: 0,      // "33% chance to hit twice on Strike"
     lifestealStrike: 0,         // "5% lifesteal on Strike wins"
     stunOnSweep: false,         // "Stuns enemy on 2-0 sweep"
     // Offensive — Spell
-    spellBonusDmg: 0,           // Sorcerer Band, Void Robes — "Spell wins deal +N"
+    spellBonusDmg: 0,           // legacy flat "+N bonus damage" (procedural pool)
+    spellBonusPct: 0,           // "Spell wins deal +N% MAG" (% of MAG, decimal)
     spellPierceHalf: false,     // Crystal Staff — "Spell wins ignore 50% of enemy DEF"
     spellPierceFull: false,     // Void Shard — "Spells bypass all DEF"
     spellDoubleMag: false,      // Void Sceptre — "MAG bonus doubled on Spell wins"
@@ -3440,16 +3454,16 @@ function getActivePassives() {
     critBonusChance: 0,         // "+5% crit chance"
     // HP/regen
     hpOnRoundWin: 0,            // "Heal N HP on turn win"
-    hpOnShieldWin: 0,           // "Regain 3 HP on Shield wins"
+    hpOnShieldWin: 0,           // "Regain 2% HP on Shield wins"
     hpOnSpellWin: 0,            // Vestment of the Avenger / Bogstone Relic
-    hpOnBattleStart: 0,         // "Heal 5 HP at start of each battle"
-    hpOnTie: 0,                 // "Absorb 1 HP on every tie"
-    hpOnBurstWin: 0,            // ultra: "Heal 2 HP on burst win"
+    hpOnBattleStart: 0,         // "Heal 4% HP at start of each battle"
+    hpOnTie: 0,                 // "Absorb 1% HP on every tie"
+    hpOnBurstWin: 0,            // ultra: "Heal 2% HP on burst win"
     hpOnWinARound: 0,           // Divine Sceptre: "Win a round to gain 5 HP"
     // Damage scaling
     bonusDmgPctRelic: 0,        // "+15%" relic damage bonus
     rageBonusAtk: 0,            // Berserker Heart "Rage" — present means active
-    sub50AtkBonus: 0,           // Berserker Axe — "+6 ATK when below 50% HP"
+    sub50AtkBonus: 0,           // Berserker Axe — "+25% ATK when below 50% HP"
     atkPerKill: 0,              // Bloodring — "+2 per kill (max +10)"
     atkPerRoundWin: 0,          // Warlord Harness — "+2 after winning a turn"
     // Crit-on-stagger
@@ -3477,8 +3491,8 @@ function getActivePassives() {
     // Enchant flags (CAPPED — only first source counts)
     enchantFire: false,
     enchantIce: 0,              // ice stacks beneficially (more debuff) but capped at 1 source
-    enchantLightning: false,
-    enchantShadow: false,
+    enchantLightning: 0,        // count of Lightning enchants (stacks: 1→8%, 2→12%, 3→15%)
+    enchantShadow: 0,           // count of Shadow enchants (stacks: 1→8%, 2→12%, 3→15%)
     enchantShadowFirstBoost: false,
     // Built-in fire (Hellfire Blade) — adds to enchant Fire even without enchant
     builtInFire: false,
@@ -3486,7 +3500,7 @@ function getActivePassives() {
     builtInIce: false,
     // Source attribution — tracks which item/enchant granted each passive so
     // combat logs can name the source. Maps passive-field-name → display string.
-    // For multi-source passives (e.g. multiple items with "Heal 2 HP on turn win"),
+    // For multi-source passives (e.g. multiple items with "Heal 2% HP on turn win"),
     // we keep the FIRST source — log just says one name to keep messages clean.
     _source: {},
   };
@@ -3500,47 +3514,54 @@ function getActivePassives() {
     if (!eid) continue;
     const g = state.inventory.find(x=>x&&x.id===eid);
     if (!g) continue;
-    // Enchants — capped at one source per type
+    // Enchants — Fire/Ice capped at one source; Lightning/Shadow COUNT stacks
+    // (1→8%, 2→12%, 3→15%) so enchanting multiple items builds toward the cap.
     if (g.enchant) {
       if (g.enchant.effect === 'fire'      && !p.enchantFire)      { p.enchantFire = true; recordSource('enchantFire', `${g.enchant.name||'Fire'} enchant`); }
       if (g.enchant.effect === 'ice'       && p.enchantIce === 0)  { p.enchantIce = 1; recordSource('enchantIce', `${g.enchant.name||'Ice'} enchant`); }
-      if (g.enchant.effect === 'lightning' && !p.enchantLightning) { p.enchantLightning = true; recordSource('enchantLightning', `${g.enchant.name||'Lightning'} enchant`); }
-      if (g.enchant.effect === 'shadow'    && !p.enchantShadow)    { p.enchantShadow = true; p.enchantShadowFirstBoost = true; recordSource('enchantShadow', `${g.enchant.name||'Shadow'} enchant`); }
+      if (g.enchant.effect === 'lightning') { p.enchantLightning += 1; if (p.enchantLightning === 1) recordSource('enchantLightning', `${g.enchant.name||'Lightning'} enchant`); }
+      if (g.enchant.effect === 'shadow')    { p.enchantShadow += 1; if (p.enchantShadow === 1) { p.enchantShadowFirstBoost = true; recordSource('enchantShadow', `${g.enchant.name||'Shadow'} enchant`); } }
     }
     // Process passive AND secondPassive (ultra legendary)
     [g.passive, g.secondPassive].forEach(passiveStr => {
       if (!passiveStr) return;
       const s = passiveStr;
-      // Defensive
-      if (s.includes('Reduce all damage by 1'))      p.flatDmgReduction = Math.max(p.flatDmgReduction, 1);
-      if (s.includes('Reduce chip damage by 1'))     p.chipDmgReduction = Math.max(p.chipDmgReduction, 1);
-      if (s.includes('Reduce burst damage by 3'))    p.burstDmgReduction = Math.max(p.burstDmgReduction, 3);
-      if (s.includes('First hit each battle reduced by 2')) { p.firstHitReduction = Math.max(p.firstHitReduction, 2); recordSource('firstHitReduction', g.name); }
+      // Defensive — percentages of incoming damage (decimals), proc sites multiply
+      if (s.includes('Reduce all damage by 5%'))     p.flatDmgReduction = Math.max(p.flatDmgReduction, 0.05);
+      if (s.includes('Reduce chip damage by 25%') || s.includes('Chip damage reduced by 25%')) p.chipDmgReduction = Math.max(p.chipDmgReduction, 0.25); // % of chip taken
+      if (s.includes('Reduce burst damage by 15%'))  { p.burstDmgReduction = Math.max(p.burstDmgReduction, 0.15); recordSource('burstDmgReduction', g.name); }
+      if (s.includes('First hit each battle reduced by 10%')) { p.firstHitReduction = Math.max(p.firstHitReduction, 0.10); recordSource('firstHitReduction', g.name); }
       if (s.includes('Take minimum 1 damage'))       p.minDmgFloor = true;
       if (s.includes('First hit each battle blocks')) { p.firstRoundBlocks = true; recordSource('firstRoundBlocks', g.name); }
       if (s.includes('chance to negate incoming burst')) { p.burstNegateChance = Math.max(p.burstNegateChance, 0.20); recordSource('burstNegateChance', g.name); }
-      if (s.includes('Reflect 3 damage'))            { p.reflectDmg = Math.max(p.reflectDmg, 3); recordSource('reflectDmg', g.name); }
-      if (s.includes('chance to reflect 2'))         { p.reflectDmg = Math.max(p.reflectDmg, 2); p.reflectChance = Math.max(p.reflectChance, 0.10); recordSource('reflectDmg', g.name); }
-      // Legendary relic passive: percent-based reflect on enemy bursts (vs the flat 2-3 dmg above)
+      // Reflect — percentages of damage taken (decimals)
+      if (s.includes('Reflect 15% damage'))          { p.reflectDmg = Math.max(p.reflectDmg, 0.15); recordSource('reflectDmg', g.name); }
+      if (s.includes('chance to reflect 10% damage')) { p.reflectDmg = Math.max(p.reflectDmg, 0.10); p.reflectChance = Math.max(p.reflectChance, 0.10); recordSource('reflectDmg', g.name); }
+      // Legendary relic passive: percent-based reflect on enemy bursts
       if (s.includes('chance to reflect burst damage')) {
         const m = s.match(/(\d+)% chance to reflect burst/);
         const pct = m ? parseInt(m[1])/100 : 0.20;
         p.reflectBurstChance = Math.max(p.reflectBurstChance || 0, pct);
-        p.reflectBurstPct    = Math.max(p.reflectBurstPct    || 0, 0.50); // reflects 50% of taken damage
+        p.reflectBurstPct    = Math.max(p.reflectBurstPct    || 0, 0.50);
         recordSource('reflectBurstChance', g.name);
       }
-      // Strike
-      const strikeBonusMatch = s.match(/Strike wins deal \+(\d+)/);
-      if (strikeBonusMatch) { p.strikeBonusDmg = Math.max(p.strikeBonusDmg, parseInt(strikeBonusMatch[1])); recordSource('strikeBonusDmg', g.name); }
-      if (s.includes('20% chance for Strike wins to deal +4 bonus damage')) { p.bonusDmgChance = 0.20; p.bonusDmgAmount = 4; recordSource('bonusDmgChance', g.name); }
+      // Strike — % of ATK (decimals). Procedural-pool "Strike wins deal +N bonus
+      // damage" still parsed as a FLAT add via strikeBonusFlat for legacy gear.
+      if (s.includes('Strike wins deal +15% ATK')) { p.strikeBonusPct = Math.max(p.strikeBonusPct, 0.15); recordSource('strikeBonusPct', g.name); }
+      const strikeFlatMatch = s.match(/Strike wins deal \+(\d+) bonus damage/);
+      if (strikeFlatMatch) { p.strikeBonusDmg = Math.max(p.strikeBonusDmg, parseInt(strikeFlatMatch[1])); recordSource('strikeBonusDmg', g.name); }
+      if (s.includes('20% chance for Strike wins to deal +20% ATK')) { p.bonusDmgChance = 0.20; p.bonusDmgPct = 0.20; recordSource('bonusDmgChance', g.name); }
       if (s.includes('2-0 sweeps deal 110%')) { p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.10); recordSource('sweepMultiplier', g.name); }
       if (s.includes('2-0 sweeps deal 120%')) { p.sweepMultiplier = Math.max(p.sweepMultiplier, 1.20); recordSource('sweepMultiplier', g.name); }
       if (s.includes('33% chance to hit twice on Strike')) { p.doubleStrikeChance = Math.max(p.doubleStrikeChance, 0.33); recordSource('doubleStrikeChance', g.name); }
       if (s.includes('10% lifesteal on Strike wins')) { p.lifestealStrike = Math.max(p.lifestealStrike, 0.10); recordSource('lifestealStrike', g.name); }
       if (s.includes('Stuns enemy on 2-0 sweep'))  { p.stunOnSweep = true; recordSource('stunOnSweep', g.name); }
-      // Spell
-      const spellBonusMatch = s.match(/Spell wins deal \+(\d+)/);
-      if (spellBonusMatch) p.spellBonusDmg = Math.max(p.spellBonusDmg, parseInt(spellBonusMatch[1]));
+      // Spell — % of MAG (decimals). Procedural-pool "Spell wins deal +N bonus
+      // damage" still parsed as FLAT via spellBonusFlat for legacy gear.
+      if (s.includes('Spell wins deal +20% MAG')) { p.spellBonusPct = Math.max(p.spellBonusPct, 0.20); recordSource('spellBonusPct', g.name); }
+      if (s.includes('Spell wins deal +8% MAG'))  { p.spellBonusPct = Math.max(p.spellBonusPct, 0.08); recordSource('spellBonusPct', g.name); }
+      const spellFlatMatch = s.match(/Spell wins deal \+(\d+) bonus damage/);
+      if (spellFlatMatch) p.spellBonusDmg = Math.max(p.spellBonusDmg, parseInt(spellFlatMatch[1]));
       if (s.includes('Spell wins ignore 50% of enemy DEF')) p.spellPierceHalf = true;
       if (s.includes('Spells bypass all DEF'))      p.spellPierceFull = true;
       if (s.includes('MAG bonus doubled on Spell wins')) p.spellDoubleMag = true;
@@ -3549,21 +3570,22 @@ function getActivePassives() {
       // Crit
       if (s.includes('Crits deal 2x') || s.includes('Crits deal 2×')) { p.critMultiplier = Math.max(p.critMultiplier, 2.0); p.crit2xWeapon = true; }
       if (s.includes('+5% crit chance')) p.critBonusChance = Math.max(p.critBonusChance, 0.05);
-      // HP / regen
-      if (s.match(/Heal (\d+) HP on turn win/))    { p.hpOnRoundWin = Math.max(p.hpOnRoundWin, parseInt(s.match(/Heal (\d+) HP/)[1])); recordSource('hpOnRoundWin', g.name); }
-      if (s.match(/Regain (\d+) HP on Shield wins/)) { p.hpOnShieldWin = Math.max(p.hpOnShieldWin, parseInt(s.match(/Regain (\d+) HP/)[1])); recordSource('hpOnShieldWin', g.name); }
-      if (s.includes('Spell wins restore 2 HP'))    { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 2); recordSource('hpOnSpellWin', g.name); }
-      if (s.includes('Spell wins heal 4 HP'))       { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 4); recordSource('hpOnSpellWin', g.name); }
-      if (s.match(/Heal (\d+) HP at start/))         { p.hpOnBattleStart = Math.max(p.hpOnBattleStart, parseInt(s.match(/Heal (\d+) HP/)[1])); recordSource('hpOnBattleStart', g.name); }
-      if (s.includes('Absorb 1 HP on every tie'))   { p.hpOnTie = Math.max(p.hpOnTie, 1); recordSource('hpOnTie', g.name); }
-      if (s.includes('Heal 2 HP on burst win'))     { p.hpOnBurstWin = Math.max(p.hpOnBurstWin, 2); recordSource('hpOnBurstWin', g.name); }
-      if (s.includes('Win a turn to gain 5 HP'))   { p.hpOnWinARound = Math.max(p.hpOnWinARound, 5); recordSource('hpOnWinARound', g.name); }
-      // (Heal N HP on turn win — handled by the regex above as hpOnRoundWin)
-      // Conditional ATK passives
-      if (s.includes('+6 ATK when below 50% HP'))    { p.sub50AtkBonus = Math.max(p.sub50AtkBonus, 6); recordSource('sub50AtkBonus', g.name); }
-      if (s.includes('Gain 2 ATK per kill (max +10)'))   { p.atkPerKill = Math.max(p.atkPerKill, 2); recordSource('atkPerKill', g.name); }
-      if (s.includes('Gain 2 ATK after winning a turn')) { p.atkPerRoundWin = Math.max(p.atkPerRoundWin, 2); recordSource('atkPerRoundWin', g.name); }
-      if (s.includes('+2 ATK each time you take burst damage (max +10)')) { p.gainAtkOnDmgTaken = Math.max(p.gainAtkOnDmgTaken, 2); recordSource('gainAtkOnDmgTaken', g.name); }
+      // HP / regen — now stored as PERCENTAGES of maxHP (decimals). Proc sites
+      // multiply by the player's effective maxHP at proc time and round (min 1).
+      if (s.includes('Heal 2% HP on turn win'))     { p.hpOnRoundWin = Math.max(p.hpOnRoundWin, 0.02); recordSource('hpOnRoundWin', g.name); }
+      if (s.includes('Regain 2% HP on Shield wins')) { p.hpOnShieldWin = Math.max(p.hpOnShieldWin, 0.02); recordSource('hpOnShieldWin', g.name); }
+      if (s.includes('Spell wins restore 1.5% HP'))  { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 0.015); recordSource('hpOnSpellWin', g.name); }
+      if (s.includes('Spell wins heal 3% HP'))       { p.hpOnSpellWin = Math.max(p.hpOnSpellWin, 0.03); recordSource('hpOnSpellWin', g.name); }
+      if (s.includes('Heal 4% HP at start'))         { p.hpOnBattleStart = Math.max(p.hpOnBattleStart, 0.04); recordSource('hpOnBattleStart', g.name); }
+      if (s.includes('Absorb 1% HP on every tie'))   { p.hpOnTie = Math.max(p.hpOnTie, 0.01); recordSource('hpOnTie', g.name); }
+      if (s.includes('Heal 2% HP on burst win'))     { p.hpOnBurstWin = Math.max(p.hpOnBurstWin, 0.02); recordSource('hpOnBurstWin', g.name); }
+      if (s.includes('Win a turn to gain 4% HP'))   { p.hpOnWinARound = Math.max(p.hpOnWinARound, 0.04); recordSource('hpOnWinARound', g.name); }
+      // (Heal N HP on turn win — handled above as hpOnRoundWin)
+      // Conditional ATK passives — now stored as PERCENTAGES of ATK (decimals)
+      if (s.includes('+25% ATK when below 50% HP'))    { p.sub50AtkBonus = Math.max(p.sub50AtkBonus, 0.25); recordSource('sub50AtkBonus', g.name); }
+      if (s.includes('Gain 4% ATK per kill (max +20%)'))   { p.atkPerKill = Math.max(p.atkPerKill, 0.04); recordSource('atkPerKill', g.name); }
+      if (s.includes('Gain 4% ATK after winning a turn (max +20%)')) { p.atkPerRoundWin = Math.max(p.atkPerRoundWin, 0.04); recordSource('atkPerRoundWin', g.name); }
+      if (s.includes('+4% ATK each time you take burst damage (max +20%)')) { p.gainAtkOnDmgTaken = Math.max(p.gainAtkOnDmgTaken, 0.04); recordSource('gainAtkOnDmgTaken', g.name); }
       // Holy Light tweaks
       if (s.includes('Holy Light heals +10% extra')) p.holyLightHealBonus += 0.10;
       if (s.includes('Holy Light heals 25% not 20%')) p.holyLightHealBonus += 0.05;
@@ -4249,10 +4271,10 @@ function buildBPTiers() {
 const BP_TIERS = buildBPTiers();
 
 const ENCHANTS = [
-  { id:'fire',     icon:'🔥', imageId:'ench_fire',      name:'Fire',      color:'#FF5722', desc:'SPELL wins deal +2 bonus damage; +1 chip damage on tied Spells', effect:'fire'     },
-  { id:'ice',      icon:'❄️', imageId:'ench_ice',       name:'Ice',       color:'#29B6F6', desc:'Lower enemy SPD by 3 and ATK by 1 for the battle',              effect:'ice'      },
-  { id:'lightning',icon:'⚡', imageId:'ench_lightning', name:'Lightning', color:'#FFD600', desc:'15% chance to stun on STRIKE win',                              effect:'lightning'},
-  { id:'shadow',   icon:'🌑', imageId:'ench_shadow',    name:'Shadow',    color:'#7B1FA2', desc:'15% chance to dodge incoming damage; +5% on first burst',       effect:'shadow'   },
+  { id:'fire',     icon:'🔥', imageId:'ench_fire',      name:'Fire',      color:'#FF5722', desc:'SPELL wins deal +15% MAG bonus damage; +1 chip damage on tied Spells', effect:'fire'     },
+  { id:'ice',      icon:'❄️', imageId:'ench_ice',       name:'Ice',       color:'#29B6F6', desc:'Lower enemy SPD by 3 and ATK by 8% for the battle',              effect:'ice'      },
+  { id:'lightning',icon:'⚡', imageId:'ench_lightning', name:'Lightning', color:'#FFD600', desc:'Chance to stun on STRIKE win (8% / 12% / 15% with 1 / 2 / 3 enchants)',                              effect:'lightning'},
+  { id:'shadow',   icon:'🌑', imageId:'ench_shadow',    name:'Shadow',    color:'#7B1FA2', desc:'Chance to dodge incoming damage (8% / 12% / 15% with 1 / 2 / 3 enchants); +5% until first burst',       effect:'shadow'   },
 ];
 const ENCHANT_COST = { common:80, uncommon:150, rare:280, epic:500, legendary:900 };
 // Enchant removal — small flat cost. To swap an enchant the player must first
@@ -6237,7 +6259,13 @@ function checkDailyLogin() {
   if (d.lastClaim) {
     const last = new Date(d.lastClaim);
     const diff = Math.floor((now - last) / 86400000);
-    if (diff === 1) { d.streak = Math.min(d.streak + 1, 7); }
+    if (diff === 1) {
+      // Advance the streak. After completing day 7, wrap back to day 1 to begin
+      // a fresh cycle (the cycleMultiplier in claimDailyReward grows each loop,
+      // so repeat cycles still reward consistency). Without the wrap the streak
+      // stuck at 7 and handed out the premium day-7 reward every day.
+      d.streak = (d.streak >= 7) ? 1 : d.streak + 1;
+    }
     else if (diff > 1) { d.streak = 1; d.cycleMultiplier = 1; }
   } else { d.streak = 1; }
   showDailyModal();
@@ -6337,12 +6365,14 @@ function closeDailyModal() {
 // ══════════════════════════════════════════════════════
 let enchantTargetId = null;
 let enchantSelectedElement = null;
+let _pendingEnchantConfirm = null; // tracks a Fire/Ice duplicate warning awaiting a second confirm
 
 function openEnchant(gearId) {
   const gear = state.inventory.find(g=>g.id===gearId);
   if (!gear || gear.slot==='relic') { showToast('Relics cannot be enchanted'); return; }
   enchantTargetId = gearId;
   enchantSelectedElement = null;
+  _pendingEnchantConfirm = null;
   const cost = ENCHANT_COST[gear.rarity];
   const hasEnchant = !!gear.enchant;
   // Item preview — shows current enchant if present
@@ -6398,6 +6428,19 @@ function removeEnchant() {
 
 function selectEnchant(id) {
   enchantSelectedElement = id;
+  // Changing selection clears any pending Fire/Ice duplicate warning and
+  // restores the normal confirm button + cost line.
+  if (_pendingEnchantConfirm && _pendingEnchantConfirm !== id) {
+    _pendingEnchantConfirm = null;
+    const gear = state.inventory.find(g=>g.id===enchantTargetId);
+    if (gear) {
+      const cost = ENCHANT_COST[gear.rarity];
+      const costEl = document.getElementById('enchantCost');
+      if (costEl) costEl.textContent = `Cost: ${cost} Gold (you have ${state.playerGold}g)`;
+    }
+    const btn = document.getElementById('enchantConfirmBtn');
+    if (btn) btn.textContent = 'Enchant →';
+  }
   const e = ENCHANTS.find(x=>x.id===id);
   document.querySelectorAll('.enchant-opt').forEach(el => {
     const selected = el.dataset.eid===id;
@@ -6410,7 +6453,7 @@ function selectEnchant(id) {
 
 function closeEnchant() {
   document.getElementById('enchantModal').classList.remove('show');
-  enchantTargetId = null; enchantSelectedElement = null;
+  enchantTargetId = null; enchantSelectedElement = null; _pendingEnchantConfirm = null;
 }
 
 function confirmEnchant() {
@@ -6419,6 +6462,27 @@ function confirmEnchant() {
   // Defensive: if somehow there's still an enchant on the item, block the
   // overwrite. Should be unreachable given the modal flow, but belt-and-suspenders.
   if (gear.enchant) { showToast('❌ Remove the existing enchant first'); return; }
+  // Soft warning: Fire & Ice don't stack. If the same element is already active
+  // on another EQUIPPED item, a second one is wasted gems. Warn once, then let
+  // the player proceed if they confirm (e.g. they plan to swap gear). Lightning
+  // & Shadow are exempt — those stack toward the 15% cap.
+  if ((enchantSelectedElement === 'fire' || enchantSelectedElement === 'ice') && _pendingEnchantConfirm !== enchantSelectedElement) {
+    const equippedIds = new Set(Object.values(state.equipped).filter(Boolean));
+    const dupeEquipped = state.inventory.some(g =>
+      equippedIds.has(g.id) && g.id !== enchantTargetId &&
+      g.enchant && g.enchant.id === enchantSelectedElement
+    );
+    if (dupeEquipped) {
+      const elName = enchantSelectedElement === 'fire' ? 'Fire' : 'Ice';
+      _pendingEnchantConfirm = enchantSelectedElement;
+      const btn = document.getElementById('enchantConfirmBtn');
+      if (btn) btn.textContent = 'Apply anyway →';
+      const costEl = document.getElementById('enchantCost');
+      if (costEl) costEl.innerHTML = `<span style="color:#FF7043">⚠️ ${elName} is already active on equipped gear — it won't stack. A second ${elName} is wasted unless you swap gear. Tap again to apply anyway.</span>`;
+      return;
+    }
+  }
+  _pendingEnchantConfirm = null;
   const cost = ENCHANT_COST[gear.rarity];
   if (state.playerGold < cost) { showToast('❌ Not enough Gold!'); return; }
   state.playerGold -= cost;
@@ -8196,7 +8260,7 @@ function startBattle(enemyTemplate) {
   // Ice enchant — applies stat debuffs at battle start (CAPPED at one source)
   if (startPa.enchantIce > 0) {
     enemy.spd = Math.max(1, (enemy.spd||10) - 3);
-    enemy.atk = Math.max(1, (enemy.atk||10) - 1);
+    enemy.atk = Math.max(1, (enemy.atk||10) - Math.max(1, Math.round((enemy.atk||10) * 0.08)));
   }
 
   // ── JEXILO'S CARDS: Apply nextFight modifiers ──
@@ -8232,15 +8296,19 @@ function startBattle(enemyTemplate) {
     _roundWinAtkBonus: 0,        // Warlord Harness stack — per-battle
     _firstHitTaken: false,       // Stoneguard Band first-hit reduction
     _firstRoundBlocked: false,   // Sentinel Spear first-round-blocks
+    // Move-identity secondaries (universal, all classes):
+    _strikeStreak: 0,            // consecutive Strike wins — +3% ATK dmg/stack, cap 5 (=+15%)
+    _shieldStance: 0,            // stacks of Shield-stance dmg reduction — each = floor(DEF*0.15), cap 1 stack active... see proc
     _shadowFirstBurstUsed: false,
     _used15Revive: false,        // Ultra "Revive once at 15%"
     _lastPotion: !!state._pendingLastPotion, // pre-battle last potion carry-over
   };
   state._pendingLastPotion = false; // consume the flag
-  // Heal-on-battle-start passives (Phoenix Feather)
+  // Heal-on-battle-start passives (Phoenix Feather) — % of maxHP
   if (startPa.hpOnBattleStart > 0) {
     const before = state.battle.playerHp;
-    state.battle.playerHp = Math.min(effMaxHp, state.battle.playerHp + startPa.hpOnBattleStart);
+    const startHeal = Math.max(1, Math.round(effMaxHp * startPa.hpOnBattleStart));
+    state.battle.playerHp = Math.min(effMaxHp, state.battle.playerHp + startHeal);
     const healed = state.battle.playerHp - before;
     if (healed > 0) {
       state.hero.hp = state.battle.playerHp; // sync back
@@ -8376,6 +8444,30 @@ function updateBattleHUD() {
     wvBar.innerHTML = `<span style="opacity:.7">WV</span>${pipsHtml.join('')}`;
   } else if (wvBar) {
     wvBar.remove();
+  }
+  // ── Move-identity status badges (player) — Strike streak + Shield stance ──
+  const playerCard = document.getElementById('playerCard');
+  let miBar = document.getElementById('moveIdentityBar');
+  const streak = b._strikeStreak || 0;
+  const stance = b._shieldStance || 0;
+  if (streak > 0 || stance > 0) {
+    if (!miBar) {
+      miBar = document.createElement('div');
+      miBar.id = 'moveIdentityBar';
+      miBar.style.cssText = 'margin-top:4px;display:flex;align-items:center;gap:6px;justify-content:flex-start;font-size:.55rem;font-family:Cinzel,serif;letter-spacing:.5px;flex-wrap:wrap';
+      playerCard.appendChild(miBar);
+    }
+    const badges = [];
+    if (streak > 0) {
+      const cap = Math.min(5, streak);
+      badges.push(`<span style="color:#FF7043;background:rgba(255,87,34,.18);border:1px solid rgba(255,87,34,.4);border-radius:4px;padding:1px 6px">⚔ STREAK ×${cap}</span>`);
+    }
+    if (stance > 0) {
+      badges.push(`<span style="color:#42A5F5;background:rgba(33,150,243,.18);border:1px solid rgba(33,150,243,.4);border-radius:4px;padding:1px 6px">🛡 STANCE</span>`);
+    }
+    miBar.innerHTML = badges.join('');
+  } else if (miBar) {
+    miBar.remove();
   }
 }
 
@@ -8722,17 +8814,22 @@ function resolveRound(playerMove, enemyMove) {
     // Healing — Bloodstone Ring, Divine Sceptre (generic turn-win),
     // plus move-type heals: Lifestone (Shield), Vestment + Bogstone (Spell).
     // Use the largest available source (don't stack heals).
-    let healAmt = 0;
-    if (pa.hpOnRoundWin > 0)                              healAmt = Math.max(healAmt, pa.hpOnRoundWin);
-    if (pa.hpOnWinARound > 0)                             healAmt = Math.max(healAmt, pa.hpOnWinARound);
-    if (moveUsed === 'shield' && pa.hpOnShieldWin > 0)    healAmt = Math.max(healAmt, pa.hpOnShieldWin);
-    if (moveUsed === 'spell'  && pa.hpOnSpellWin  > 0)    healAmt = Math.max(healAmt, pa.hpOnSpellWin);
+    // Healing — percentage-of-maxHP based. Fields hold decimals (0.02 = 2%).
+    // Take the largest single source (don't stack), then convert to a flat
+    // amount off the player's effective max HP at proc time.
+    let healPct = 0;
+    if (pa.hpOnRoundWin > 0)                              healPct = Math.max(healPct, pa.hpOnRoundWin);
+    if (pa.hpOnWinARound > 0)                             healPct = Math.max(healPct, pa.hpOnWinARound);
+    if (moveUsed === 'shield' && pa.hpOnShieldWin > 0)    healPct = Math.max(healPct, pa.hpOnShieldWin);
+    if (moveUsed === 'spell'  && pa.hpOnSpellWin  > 0)    healPct = Math.max(healPct, pa.hpOnSpellWin);
+    const healAmt = healPct > 0 ? Math.max(1, Math.round(b.effMaxHp * healPct)) : 0;
     if (healAmt > 0) {
       const before = b.playerHp;
       b.playerHp = Math.min(b.effMaxHp, b.playerHp + healAmt);
       if (b.playerHp > before) spawnFloat('+'+healAmt, 'heal', true);
     }
-    // Warlord Harness — gain 2 ATK after winning ANY turn (stacks within battle)
+    // Warlord Harness — gain % ATK after winning ANY turn (stacks within battle,
+    // capped at the proc site). Store the running pct; the ATK calc converts it.
     if (pa.atkPerRoundWin > 0) b._roundWinAtkBonus = (b._roundWinAtkBonus || 0) + pa.atkPerRoundWin;
     // Dragon Fang — Strike-only lifesteal. Heals from ALL Strike turn-wins,
     // not just deciding bursts. Lifesteal % = pa.lifestealStrike.
@@ -8811,16 +8908,21 @@ function resolveRound(playerMove, enemyMove) {
     spawnFloat('-'+pa.poisonChip,'enemy-dmg',false);
   }
 
-  // Sub-50% Berserker Axe ATK boost
-  const sub50AtkBonus = (b.playerHp < b.effMaxHp * 0.5) ? pa.sub50AtkBonus : 0;
-  // Per-kill ATK stack (Bloodring) — tracked on battle since it persists between fights via `b._killAtkBonus`
-  // Reset to 0 at startBattle if applicable
-  const killBonus = pa.atkPerKill > 0 ? Math.min(10, b._killAtkBonus || 0) : 0;
-  // Per-round-win ATK stack (Warlord Harness)
-  const roundWinBonus = pa.atkPerRoundWin > 0 ? (b._roundWinAtkBonus || 0) : 0;
-  // Berserker Heart — +2 per damage taken in this battle
-  const dmgTakenBonus = pa.gainAtkOnDmgTaken > 0 ? Math.min(10, b._dmgTakenAtkBonus || 0) : 0;
-  // Win-streak ATK stack (ultra legendary)
+  // Base ATK before conditional bonuses — % bonuses compute off this.
+  const baseAtkForPct = hero.atk + (bonuses.atk || 0);
+  // Sub-50% Berserker Axe ATK boost — now % of base ATK (e.g. 0.25 = +25%)
+  const sub50AtkBonus = (b.playerHp < b.effMaxHp * 0.5 && pa.sub50AtkBonus > 0)
+    ? Math.round(baseAtkForPct * pa.sub50AtkBonus) : 0;
+  // Per-kill ATK stack (Bloodring) — b._killAtkBonus accumulates the % (capped 0.20)
+  const killBonus = pa.atkPerKill > 0
+    ? Math.round(baseAtkForPct * Math.min(0.20, b._killAtkBonus || 0)) : 0;
+  // Per-round-win ATK stack (Warlord Harness) — capped 0.20
+  const roundWinBonus = pa.atkPerRoundWin > 0
+    ? Math.round(baseAtkForPct * Math.min(0.20, b._roundWinAtkBonus || 0)) : 0;
+  // Berserker Heart — % per burst taken, capped 0.20
+  const dmgTakenBonus = pa.gainAtkOnDmgTaken > 0
+    ? Math.round(baseAtkForPct * Math.min(0.20, b._dmgTakenAtkBonus || 0)) : 0;
+  // Win-streak ATK stack (ultra legendary) — unchanged (flat +2/streak, cap +8)
   const streakBonus = pa.streakAtkStack > 0 ? Math.min(8, (b.winStreak||0) * 2) : 0;
   // Strike-streak rounds-based bonus (Hawk's Eye Loop ring) — +5% per round, max +25%
   const strikeStreakMult = pa.strikeStreakDmg > 0 ? (1 + Math.min(0.25, (b.roundNum||1) * pa.strikeStreakDmg)) : 1;
@@ -8918,8 +9020,12 @@ function resolveRound(playerMove, enemyMove) {
       dodgeSource = armor.name;
     }
   }
-  if (pa.enchantShadow) {
-    dodgeChance += pa.enchantShadowFirstBoost && !b._shadowFirstBurstUsed ? 0.20 : 0.15;
+  if (pa.enchantShadow > 0) {
+    // Stacking dodge: 1 item→8%, 2→12%, 3→15% (diminishing returns toward cap)
+    const shadowStack = [0, 0.08, 0.12, 0.15][Math.min(3, pa.enchantShadow)];
+    // First-burst boost: +5% on top until the first burst lands
+    const firstBoost = (pa.enchantShadowFirstBoost && !b._shadowFirstBurstUsed) ? 0.05 : 0;
+    dodgeChance += shadowStack + firstBoost;
     if (!dodgeSource) dodgeSource = 'Shadow enchant';
     else dodgeSource += ' + Shadow enchant';
   }
@@ -8929,6 +9035,9 @@ function resolveRound(playerMove, enemyMove) {
 
   // ── TIE: chip damage, no round point ──
   if(isTie){
+    // Move-identity: a tie keeps the Strike streak alive ONLY if the player
+    // stayed on Strike (Strike-Strike tie). Switching to Shield/Spell resets it.
+    if (playerMove !== 'strike') b._strikeStreak = 0;
     const enemySpdV=b.enemy.spd||10;
     const spdDiff=effSpd-enemySpdV;
     // Windband — when an SPD-reduction proc lands, the reduction is doubled
@@ -8941,8 +9050,8 @@ function resolveRound(playerMove, enemyMove) {
     const chipP=Math.max(2,Math.floor(effAtk*0.15));
     const chipEraw=Math.max(3,Math.floor(b.enemy.atk*0.20));
     let chipE=Math.max(2,Math.floor(chipEraw*clashMult));
-    // Tower Shield Blade — reduce chip damage taken by N (min 1)
-    if (pa.chipDmgReduction > 0) chipE = Math.max(1, chipE - pa.chipDmgReduction);
+    // Tower Shield Blade — reduce chip damage taken by % (min 1)
+    if (pa.chipDmgReduction > 0) chipE = Math.max(1, Math.round(chipE * (1 - pa.chipDmgReduction)));
     if(clashMult<1) achStat('spdClashWins',1);
     // Fire enchant — bonus chip on tied Spells (capped at 1 source via getActivePassives)
     const fireChipBonus = (playerMove === 'spell' && pa.enchantFire) ? 1 : 0;
@@ -8974,7 +9083,8 @@ function resolveRound(playerMove, enemyMove) {
     // Swamp Soul — heal 1 HP on every tie
     if (pa.hpOnTie > 0) {
       const before = b.playerHp;
-      b.playerHp = Math.min(b.effMaxHp, b.playerHp + pa.hpOnTie);
+      const tieHeal = Math.max(1, Math.round(b.effMaxHp * pa.hpOnTie));
+      b.playerHp = Math.min(b.effMaxHp, b.playerHp + tieHeal);
       const actualHealed = b.playerHp - before;
       if (actualHealed > 0) spawnFloat('+'+actualHealed, 'heal', true);
     }
@@ -8992,6 +9102,29 @@ function resolveRound(playerMove, enemyMove) {
   // ── PLAYER WINS ROUND ──
   } else if(isWin){
     b.playerRoundWins++;
+    // ── MOVE-IDENTITY SECONDARIES (universal, all classes) ──
+    if (playerMove === 'strike') {
+      // Strike streak builds (cap tracked at consume time)
+      b._strikeStreak = (b._strikeStreak || 0) + 1;
+    } else {
+      // Any non-Strike win resets the streak
+      b._strikeStreak = 0;
+    }
+    if (playerMove === 'shield') {
+      // Shield stance — each Shield win refreshes the reduction (one stack active,
+      // value scales with DEF). Cap handled at consume time. Worth floor(DEF*0.15).
+      const stanceVal = Math.max(1, Math.floor(effDef * 0.15));
+      // Stack up to 2 wins for a stronger stance, capped at floor(DEF*0.40)
+      const stanceCap = Math.max(1, Math.floor(effDef * 0.40));
+      b._shieldStance = Math.min(stanceCap, (b._shieldStance || 0) + stanceVal);
+    }
+    if (playerMove === 'spell') {
+      // Spell tempo — reduce loaded ability cooldown by 1 (if any)
+      if (b.playerAbilityCooldown > 0) {
+        b.playerAbilityCooldown = Math.max(0, b.playerAbilityCooldown - 1);
+        b._spellTempoFired = true; // for log annotation below
+      }
+    }
     // Track for adaptive AI: enemy lost a round, increment its recent-losses counter
     b._enemyRecentLosses = (b._enemyRecentLosses || 0) + 1;
     setTimeout(()=>animateSprite('enemySprite','hurt-anim'),300);
@@ -9009,18 +9142,32 @@ function resolveRound(playerMove, enemyMove) {
       if (playerMove === 'strike' && pa.strikeStreakDmg > 0) {
         dmg = Math.floor(dmg * strikeStreakMult);
       }
-      // Strike bonus damage from passives ("Strike wins deal +N damage")
-      if (playerMove === 'strike') dmg += pa.strikeBonusDmg;
-      // 20% chance to deal +4 bonus damage on Strike (Battle Axe)
+      // Move-identity STRIKE STREAK (universal) — +3% ATK damage per consecutive
+      // Strike win, cap 5 stacks (+15%). _strikeStreak was incremented at the top
+      // of the win branch, so it includes the current win.
+      if (playerMove === 'strike' && b._strikeStreak > 0) {
+        const streakPct = Math.min(5, b._strikeStreak) * 0.03;
+        dmg += Math.round(effAtk * streakPct);
+      }
+      // Strike bonus damage from passives. Legacy flat ("+N bonus damage" from
+      // procedural pool) plus the new % of ATK (War Totem "+15% ATK").
+      if (playerMove === 'strike') {
+        dmg += pa.strikeBonusDmg;
+        if (pa.strikeBonusPct > 0) dmg += Math.round(effAtk * pa.strikeBonusPct);
+      }
+      // 20% chance to deal +20% ATK bonus damage on Strike (Battle Axe)
       if (playerMove === 'strike' && pa.bonusDmgChance > 0 && Math.random() < pa.bonusDmgChance) {
-        dmg += pa.bonusDmgAmount;
+        dmg += Math.round(effAtk * (pa.bonusDmgPct || 0.20));
       }
       // 33% double-strike chance (Eagle Eye Crossbow) — true double hit
       if (playerMove === 'strike' && pa.doubleStrikeChance > 0 && Math.random() < pa.doubleStrikeChance) {
         dmg = dmg * 2;
       }
-      // Spell bonus damage (Sorcerer Band, Void Robes)
-      if (playerMove === 'spell') dmg += pa.spellBonusDmg;
+      // Spell bonus damage (Sorcerer Band, Void Robes). Legacy flat + % of MAG.
+      if (playerMove === 'spell') {
+        dmg += pa.spellBonusDmg;
+        if (pa.spellBonusPct > 0) dmg += Math.round(effMag * pa.spellBonusPct);
+      }
       // 33% second Spell hit (Stormcaller Rod) — true double hit
       if (playerMove === 'spell' && pa.spellDoubleHitChance > 0 && Math.random() < pa.spellDoubleHitChance) {
         dmg = dmg * 2;
@@ -9039,14 +9186,17 @@ function resolveRound(playerMove, enemyMove) {
       // Enchant bonuses (capped — Fire/Lightning each from one source)
       let enchantNote='';
       if (pa.enchantFire && playerMove === 'spell') {
-        dmg += 2;
+        dmg += Math.max(1, Math.round(effMag * 0.15));
         const fSrc = pa._source?.enchantFire;
         enchantNote = fSrc ? `${fSrc}!` : 'Fire!';
       }
-      if (pa.enchantLightning && playerMove === 'strike' && Math.random() < 0.15) {
-        b.enemy._stunned = true;
-        const lSrc = pa._source?.enchantLightning;
-        enchantNote = lSrc ? `STUN (${lSrc})!` : 'STUN!';
+      if (pa.enchantLightning > 0 && playerMove === 'strike') {
+        const stunChance = [0, 0.08, 0.12, 0.15][Math.min(3, pa.enchantLightning)];
+        if (Math.random() < stunChance) {
+          b.enemy._stunned = true;
+          const lSrc = pa._source?.enchantLightning;
+          enchantNote = lSrc ? `STUN (${lSrc})!` : 'STUN!';
+        }
       }
       // Relic +15% damage bonus
       if(relicId){const r=state.inventory.find(g=>g.id===relicId);if(r&&r.passive&&r.passive.includes('+15%'))dmg=Math.floor(dmg*1.15);}
@@ -9092,11 +9242,12 @@ function resolveRound(playerMove, enemyMove) {
         coliseumReflectMsg = ` REFLECT! ${reflected} damage returned to attacker.`;
       }
       // (Lifesteal moved to _applyTurnWinPassives below — fires on all Strike turn-wins, not just bursts)
-      // Heal on burst win (ultra legendary "Heal 2 HP on burst win")
+      // Heal on burst win — % of maxHP
       if (pa.hpOnBurstWin > 0) {
         const before = b.playerHp;
-        b.playerHp = Math.min(b.effMaxHp, b.playerHp + pa.hpOnBurstWin);
-        if (b.playerHp > before) spawnFloat('+'+pa.hpOnBurstWin,'heal',true);
+        const burstHeal = Math.max(1, Math.round(b.effMaxHp * pa.hpOnBurstWin));
+        b.playerHp = Math.min(b.effMaxHp, b.playerHp + burstHeal);
+        if (b.playerHp > before) spawnFloat('+'+burstHeal,'heal',true);
       }
       // Apply turn-win passives — fires on EVERY turn-win including bursts.
       // Pass damage dealt for proportional lifesteal (Dragon Fang).
@@ -9114,14 +9265,17 @@ function resolveRound(playerMove, enemyMove) {
       if(dmg>200) achFlag('overkillHit');
       // Track class ability usage
       achStat(`raceDmgDealt_${state.hero.race||'human'}`, dmg);
-      logMsg=`${sweep?'SWEEP! ':''}You win the round! ${dmg} damage dealt${isCrit?' CRIT!':''}${enchantNote?' '+enchantNote:''}${wvBlockedNote}${coliseumReflectMsg}${wiseVeteranLogMsg}`; logCls='player-win-log';
+      logMsg=`${sweep?'SWEEP! ':''}You win the round! ${dmg} damage dealt${isCrit?' CRIT!':''}${enchantNote?' '+enchantNote:''}${b._spellTempoFired?' ⏱️ −1 CD!':''}${wvBlockedNote}${coliseumReflectMsg}${wiseVeteranLogMsg}`; logCls='player-win-log';
+      b._spellTempoFired = false;
       spawnFloat('-'+dmg,'enemy-dmg',false);
       b.playerRoundWins=0; b.enemyRoundWins=0; b.roundNum=(b.roundNum||1)+1;
       logMsg += _coliseumRoundComplete();
       playSound('round_win',0.5);
     } else {
       // Non-burst round win — show feedback so the player sees the result
-      logMsg = `${pIcon} BEATS ${eIcon} — You win the turn! (${b.playerRoundWins}-${b.enemyRoundWins})${wiseVeteranLogMsg}`;
+      const _tempoNote = b._spellTempoFired ? ' ⏱️ Spell Tempo: −1 CD!' : '';
+      b._spellTempoFired = false;
+      logMsg = `${pIcon} BEATS ${eIcon} — You win the turn! (${b.playerRoundWins}-${b.enemyRoundWins})${_tempoNote}${wiseVeteranLogMsg}`;
       logCls = 'player-win-log';
       playSound('round_win', 0.5);
       // Apply turn-win passives — fires on EVERY turn-win (burst & non-burst).
@@ -9133,6 +9287,7 @@ function resolveRound(playerMove, enemyMove) {
   // ── ENEMY WINS ROUND ──
   } else {
     b.winStreak=0;
+    b._strikeStreak = 0; // move-identity: losing a round resets the Strike streak
     // Adaptive AI: enemy won a round, reset its losing-streak counter
     b._enemyRecentLosses = 0;
     // Check stun
@@ -9242,19 +9397,30 @@ function resolveRound(playerMove, enemyMove) {
           b.abilityUsedThisRound=false;
           setTimeout(()=>checkBattleEnd(),900); return;
         }
-        // First-hit reduction (Stoneguard Band) — only the first damaging hit
+        // First-hit reduction (Stoneguard Band) — % of the incoming hit
         if (pa.firstHitReduction > 0 && !b._firstHitTaken) {
-          dmg = Math.max(1, dmg - pa.firstHitReduction);
+          dmg = Math.max(1, dmg - Math.round(dmg * pa.firstHitReduction));
           b._firstHitTaken = true;
         }
-        // Burst damage reduction (Iron Bulwark)
-        if (pa.burstDmgReduction > 0) dmg = Math.max(1, dmg - pa.burstDmgReduction);
-        // Flat damage reduction (Ancient Stonehide)
-        if (pa.flatDmgReduction > 0) dmg = Math.max(1, dmg - pa.flatDmgReduction);
+        // Burst damage reduction (Iron Bulwark) — % of incoming
+        if (pa.burstDmgReduction > 0) dmg = Math.max(1, dmg - Math.round(dmg * pa.burstDmgReduction));
+        // Flat damage reduction (Ancient Stonehide) — now % of incoming (min 1 reduced)
+        if (pa.flatDmgReduction > 0) dmg = Math.max(1, dmg - Math.max(1, Math.round(dmg * pa.flatDmgReduction)));
         // Boss damage reduction (Reliquary Band)
         if (pa.bossDmgReduction > 0 && isBossFight) dmg = Math.max(1, Math.floor(dmg * (1 - pa.bossDmgReduction)));
         // Min-floor — Titan Armor — never zero (1 minimum)
         if (pa.minDmgFloor) dmg = Math.max(1, dmg);
+        // Move-identity SHIELD STANCE — consume accumulated reduction on the
+        // next incoming burst, then reset. Value scaled with DEF at build time.
+        let _stanceNote = '';
+        if (b._shieldStance > 0) {
+          const reduced = Math.min(dmg - 1, b._shieldStance); // never reduce below 1
+          if (reduced > 0) {
+            dmg = Math.max(1, dmg - reduced);
+            _stanceNote = ` Shield Stance absorbed ${reduced}!`;
+          }
+          b._shieldStance = 0; // consumed
+        }
         b.playerHp-=dmg; playerDmg=dmg;
         // ── COLISEUM: Life Steal (Eternal Champion+) — heals 20% of dmg dealt ──
         // 25% chance pre-revive, 33% chance post-revive. Resolved separately
@@ -9270,26 +9436,28 @@ function resolveRound(playerMove, enemyMove) {
             spawnFloat('+'+heal,'heal',false);
           }
         }
-        // Track damage taken for Berserker Heart's stacking ATK
+        // Track damage taken for Berserker Heart's stacking ATK (% of base ATK)
         if (pa.gainAtkOnDmgTaken > 0) {
           const before = b._dmgTakenAtkBonus || 0;
-          b._dmgTakenAtkBonus = Math.min(10, before + pa.gainAtkOnDmgTaken);
-          const gained = b._dmgTakenAtkBonus - before;
-          if (gained > 0) {
+          b._dmgTakenAtkBonus = Math.min(0.20, before + pa.gainAtkOnDmgTaken);
+          const gainedPct = b._dmgTakenAtkBonus - before;
+          if (gainedPct > 0) {
             const src = pa._source?.gainAtkOnDmgTaken;
-            coliseumBurstExtra += ` +${gained} ATK${src ? ' (' + src + ')' : ''}!`;
+            const gainedAtk = Math.round((hero.atk + (bonuses.atk||0)) * gainedPct);
+            if (gainedAtk > 0) coliseumBurstExtra += ` +${gainedAtk} ATK${src ? ' (' + src + ')' : ''}!`;
           }
         }
         achStat(`raceDmgTaken_${state.hero.race||'human'}`, dmg);
-        logMsg=`${sweep?'SWEPT! ':''}${b.enemy.name} wins the round! ${dmg} damage dealt${wvNote}${coliseumBurstExtra}${wiseVeteranLogMsg}`;logCls='enemy-win-log';
-        // Reflect — Stone Idol (always 3) or Dragon Scale (10% chance for 2)
+        logMsg=`${sweep?'SWEPT! ':''}${b.enemy.name} wins the round! ${dmg} damage dealt${_stanceNote}${wvNote}${coliseumBurstExtra}${wiseVeteranLogMsg}`;logCls='enemy-win-log';
+        // Reflect — Stone Idol (15% of dmg taken) or Dragon Scale (10% chance, 10% of dmg)
         if (pa.reflectDmg > 0) {
           const shouldReflect = pa.reflectChance === 0 || Math.random() < pa.reflectChance;
           if (shouldReflect) {
-            b.enemyHp = Math.max(0, b.enemyHp - pa.reflectDmg);
-            spawnFloat('-'+pa.reflectDmg,'enemy-dmg',false);
+            const reflectAmt = Math.max(1, Math.round(dmg * pa.reflectDmg));
+            b.enemyHp = Math.max(0, b.enemyHp - reflectAmt);
+            spawnFloat('-'+reflectAmt,'enemy-dmg',false);
             const rSrc = pa._source?.reflectDmg;
-            logMsg += ` ${pa.reflectDmg} reflected${rSrc ? ' (' + rSrc + ')' : ''}!`;
+            logMsg += ` ${reflectAmt} reflected${rSrc ? ' (' + rSrc + ')' : ''}!`;
           }
         }
         // Legendary relic burst reflect — % chance to return % of damage taken.
@@ -9569,9 +9737,9 @@ function endMatch(victory) {
       goldGain += winNf.winBonusChance;
       showToast(`🎲 The crowd tips an extra ${winNf.winBonusChance}g!`);
     }
-    // Bloodring — track kills this run (not per-battle). +2 ATK per kill, capped at +10
+    // Bloodring — track kills this run (not per-battle). +4% ATK per kill, capped at +20%
     if (winPa.atkPerKill > 0 && state.runBank) {
-      state.runBank._killAtkBonus = Math.min(10, (state.runBank._killAtkBonus || 0) + winPa.atkPerKill);
+      state.runBank._killAtkBonus = Math.min(0.20, (state.runBank._killAtkBonus || 0) + winPa.atkPerKill);
     }
     state.playerXP+=xpGain;
     // Gold is BANKED — added to runBank, paid out on arena clear or retreat.
